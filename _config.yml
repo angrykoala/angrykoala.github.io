@@ -75,3 +75,7 @@ menu:
 deploy:
   type: git
   repo: git@github.com:demiurgosoft/demiurgosoft.github.io.git
+
+# No follow links (hexo-autonofollow)
+nofollow:
+    enable: true
