@@ -44,8 +44,8 @@ highlight:
   tab_replace:
 
 # Category & Tag
-default_category: general
-category_map: tutorial application general
+default_category: General
+category_map:
 tag_map:
 
 # Date / Time format

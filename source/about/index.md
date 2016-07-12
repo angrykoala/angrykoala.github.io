@@ -1,6 +1,6 @@
 ---
 title: About
-date: 2016-07-12 12:32:15
+comments: false
 ---
 
 Hi!, I'm Andrés Ortiz, magician, koala fan and programmer when full moon.
