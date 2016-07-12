@@ -14,7 +14,7 @@ timezone: Europe/Madrid
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://demiurgosoft.github.io/
 root: /
-permalink: :category/:year/:title/
+permalink: :category/:title/
 permalink_defaults:
 
 # Directory
@@ -44,8 +44,8 @@ highlight:
   tab_replace:
 
 # Category & Tag
-default_category: uncategorized
-category_map:
+default_category: general
+category_map: tutorial application general
 tag_map:
 
 # Date / Time format
