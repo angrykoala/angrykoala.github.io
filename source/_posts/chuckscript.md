@@ -5,7 +5,7 @@ date: 2016-07-20 11:42:04
 tags:
 ---
 
-# The Chuck Norris Programming Language
+## The Chuck Norris Programming Language
 
 Chuck Norris can code using binary without 1, with Chuck Norris Programming Language (**CNPL**) you also can!. For those who think assembler is a high level language.
 

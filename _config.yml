@@ -70,8 +70,8 @@ theme: concise
 
 # Menu
 menu:
-  About: /about
   Archives: /archives
+  About: /about
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
