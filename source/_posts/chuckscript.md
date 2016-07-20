@@ -1,14 +1,17 @@
 ---
 title: ChuckScript
 category: Programming
-date: 2016-07-13 00:22:04
+date: 2016-07-20 11:42:04
 tags:
 ---
+
 # The Chuck Norris Programming Language
 
 Chuck Norris can code using binary without 1, with Chuck Norris Programming Language (**CNPL**) you also can!. For those who think assembler is a high level language.
 
 Here I present an esoteric programming language based on the [Unary esoteric language](https://esolangs.org/wiki/Unary) developed with _javaScript_
+
+<!-- more --> 
 
 ## Syntax
 The syntax is probably the easiest to learn: `0` is the only command you'll need. What does `0` do? Everything.
@@ -65,5 +68,3 @@ To use _chuckscript_ in your node.js code, simply `require('chuckscript')`:
 
 
 > CNPL is a improved version of [Unary esoteric language](https://esolangs.org/wiki/Unary)
-
-> ABC.js (c) 2013 Stephan Schmitz
