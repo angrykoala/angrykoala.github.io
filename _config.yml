@@ -71,6 +71,7 @@ theme: concise
 # Menu
 menu:
   Archives: /archives
+  GitHub: https://github.com/demiurgosoft
   About: /about
 
 # Deployment
