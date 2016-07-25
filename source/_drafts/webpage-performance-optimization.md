@@ -88,11 +88,6 @@ There are more types of databases and you could use one or more in order to achi
 
 >When developing the server, keep in mind that most time spent is due to database lookup. Templates rendering and heavy tasks also affects latency. 
 
-### Redundancy
-Deploying multiple server scripting instances (in one or multiple machines) will allow you to take advantage on multi core cpus. This will lightly improve bots, latency and maximum request, but it will also provide a more reliable server, with more uptime.
-
->Some server technologies may handle this automatically, but it is important to make sure your scripts are correctly configured
-
 ## Client
 Event when the server is correctly implemented, a bad client-side code will surely make the overall webpage run slowly, and probably take a huge amount of resources from your users' computer. In the end, a webpage will be a program running in the user machine, and it should be coded carefully or it could affect the user experience, particularly on mobile phones and old computers.
 
@@ -124,16 +119,16 @@ Accessing and changing the DOM may be a heavy and slow task. Try to avoid unnece
 * Make it async!
 * DOM modifications can be slow.
 * Avoid client side rendering if not using a framework.
-* Follow the style guides on writing JS
+* Follow the style guides on writing JS.
 
 ### CSS
 CSS only specifies how the content is shown, however, the way the browser handles stylesheets, a bad CSS could result on slower rendering times, strange flickering and overall bad experience. It is important to know how CSS rendering works[^4] and follow the basic guidelines on writing CSS.
 
 The main problem is using bad the css selectors, things such as `button#backButton` and `treehead treerow treecell` could make an impact on rendering times and are not recommended when writing css.
 
-* Avoid bad use of rules (check css guidelines)
-* Don't have the same rule twice
-* Avoid ambiguous rules
+* Avoid bad use of rules (check css guidelines).
+* Don't have the same rule twice.
+* Avoid ambiguous rules.
 
 
 ## Resources
@@ -147,8 +142,8 @@ load time: <3 seconds
 min-latency: 300ms
 
 
-----
-## Bibliography
+
+# Bibliography
 
 [^1]:Apache server configuration: https://www.digitalocean.com/community/tutorials/how-to-optimize-apache-web-server-performance
 [^2]:Nginx server configuration:https://www.nginx.com/blog/tuning-nginx

@@ -1,5 +1,5 @@
 ---
-title: {{ title }}
+title: Open Source Games
 tags:
 ---
 
