@@ -20,7 +20,7 @@ All the stuff here is divided in different categories:
 
 
 # Languages
-Learning a new programming language usually takes a long time, and depending on your needs it may or may not be useful certain language. Here you have a few simple languages (not exclusively programming) versatile enough to be used with almost any stack you may already use and simple enough to learn its basics within a few hours
+Learning a new programming language usually takes a long time, and depending on your needs it may or may not be useful certain language. Here you have a few simple languages (not exclusively programming) versatile enough to be used with almost any stack you may already use and simple enough to learn its basics within a few hours.
 
 </br>
 ## Markdown
@@ -148,15 +148,75 @@ JSON can easily be parsed in several languages (e.g. JavaScript, Python) and par
 <!-- Add bash, html, js and python?? -->
 
 # Tools
+Every developer has his own set of tools (IDEs, editors, etc.). The following list show some tools that I find not only useful, but versatile enough to work with almost any environment and languages or technologies you may be using, effectively helping to work or solve certain tasks.
 
-* Atom
-* Nano
-* Astyle/beautifier
-* Git
+</br>
+## Atom
+![Atom Logo](atom.svg)
+From the creators of [GitHub](https://github.com), atom is an open source text editor/IDE that provides a huge amount of features and is fully customizable[^4].
+
+Out of the box Atom provides a decent editing environment, similar to what you could find on [Sublime Text](https://www.sublimetext.com) or _gedit_, with features such as _file system browser_, _multiple panes_, _file extension acknowledge_, _git integration_ and multiple _themes_.
+
+However, probably the best feature with Atom is the _package manager_ (plugins) that allows anyone to easily install and configure a huge amount of plugins, either official or third-party packages. Theses packages and themes can be easily downloaded from Atom, and provides things such as integration for different languages, code completion, check spelling and almost anything you may need from an IDE.
+
+Being Open-Source, lightweight, cross-platform and highly customizable makes atom one of the most adaptive text editors available, easy to use and fast to setup.
+
+The main drawback is the huge amount of resources it needs to run comparing to other text editors. The great amount of features and being developed with it's own web-based framework, [Electron](http://electron.atom.io), makes atom a relatively heavy text editor. It is still way lighter on resources than full-featured IDEs like Netbeans, Eclipse or Visual Studio.
+
+>Atom, as a middle ground between an IDE and a text editor, provides most features you may need for programming in almost any language while still being simple.
+
+
+</br>
+## Code Beautifiers
+Instead of a concrete technology, here I present a kind of tool that I find essential. Code Beautifiers. 
+
+Every coder has his own style of writing code (tabs vs spaces, space before brackets, ...) and usually, even with a small team, its hard to maintain a standard style. Also, trying to maintain a style may end up being time consuming, checking things like indentation or spaces. Configuring an automated style tool will allow to automatically style all your project homogeneously without errors or wasting time.
+
+One of the most famous tool is [**Astyle**](http://astyle.sourceforge.net) which allows you to easily and effectively beautify code in C, C++, Java and C# among others. [**js-beautify**](https://github.com/beautify-web/js-beautify) works in the same way for JavaScript and JSON.
+
+You can easily find beautifiers for almost any language you want, and in the long run, it will save you a long of time (and discussions) regarding source code styling. Atom provides a pretty decent beautifier package that works with a lot of different languages.
+
+
+</br>
+## Git
+<img src="git.svg" alt="Git Logo" width=241></img>
+Git is a distributed _version control system_ currently used to handle a huge number of software projects[^5].
+
+Git provides mechanisms to control a huge number of source code files between different developers and repositories, working in different versions (or _branches_) of the code and integrating with relative ease.
+
+Being lightweight, fast and reliable, git is widely used through different platforms such as [GitHub](https://github.com) and [GitLab](https://about.gitlab.com) among others.
+
+### Git Cheatsheet
+Git can be used on different IDEs and interfaces, but it can also be used with plain terminal. You can use git on your own or with an online repository (recommended) like the platforms above.
+
+1. Setup Git
+    * `git config --global user.name "username"`
+    * `git config --global user.email "email"`
+2. Create or clone a repository
+    * To create a repository `git init` and `git remote add origin [github repository url]` to link with your remote repository
+    * To directly clone a remote repo, simply `git clone [github repository url]`
+3. Add files to commit
+    * The first step on adding files to a repository is adding to your commit, with `git add [filename]` or `git add -A` to add all files
+4. Commit
+    * `git status` will show you your current state of your local repository and the files added to commit. When ready to create a commit, `git commit -m "commit message"`
+    * Making a commit will create a fixed point in your repository history, storing the changes up to that point
+5. Push
+    * If you want your commit (or more than one commit) to be in the remote repository, `git push` or `git push origin master` will upload them (you should have rights to writing on the remote repo)
+6. Pull
+    * To download the changes from the remote repository, `git pull`
+ 
+    
+Using Git also provides interesting tools like _pull requests_, _reverts_ and _branches_. Wile it takes a while to master a tool like git, it ends up being an essential tool for development.
+
+>You can find more commands at the github cheat sheet(https://services.github.com/kit/downloads/github-git-cheat-sheet.pdf) and a great interactive tutorial on [Try Git](https://try.github.io)
+
+----------
+
+
+
 * SSH/FSTP
 * netcat?
 * Lint?
-* NPM???
 
 
 ---
@@ -177,3 +237,5 @@ Online tools:
 [^1]: GitHub's Mastering Markdown: https://guides.github.com/features/mastering-markdown
 [^2]: Daring Fireball Markdown Syntax: http://daringfireball.net/projects/markdown/syntax
 [^3]: Introducing JSON: http://www.json.org
+[^4]: Atom Official Webpage: https://atom.io
+[^5]: Git Official Webpage: https://git-scm.com
