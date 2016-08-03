@@ -1,6 +1,6 @@
 {
-  "name": "demiurgosoft.github.io",
-  "version": "0.1.0",
+  "name": "angrykoala.github.io",
+  "version": "0.2.1",
   "description": "A blog for programmers and koalas with hexo",
   "main": "index.js",
   "hexo": {
@@ -33,19 +33,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/demiurgosoft/demiurgosoft.github.io.git"
+    "url": "git+https://github.com/angrykoala/angrykoala.github.io.git"
   },
   "keywords": [
     "blog",
     "programming",
     "koala",
     "angry",
-    "demiurgosoft"
+    "angrykoala"
   ],
-  "author": "demiurgosoft <demiurgosoft@hotmail.com>",
+  "author": "angrykoala <angrykoala@outlook.es>",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/demiurgosoft/demiurgosoft.github.io/issues"
+    "url": "https://github.com/angrykoala/angrykoala.github.io/issues"
   },
-  "homepage": "https://github.com/demiurgosoft/demiurgosoft.github.io#readme"
+  "homepage": "https://github.com/angrykoala/angrykoala.github.io#readme"
 }

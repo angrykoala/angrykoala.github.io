@@ -5,4 +5,4 @@ tags:
 category: General
 ---
 
-Hello!, this is the first post in <http://demiurgosoft.github.io>, here I'll post some stuff I made (software, apps and tutorials) and some koala pictures. Check more about me and this blog [here](/about).
+Hello!, this is the first post in <http://angrykoala.github.io>, here I'll post some stuff I made (software, apps and tutorials) and some koala pictures. Check more about me and this blog [here](/about).

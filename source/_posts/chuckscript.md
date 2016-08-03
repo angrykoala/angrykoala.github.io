@@ -31,7 +31,7 @@ You can install chuckScript from the official npm repository typing:
 ```
 npm install -g chuckscript
 ```
-Or you can manually clone from [github](https://github.com/demiurgosoft/chuckscript) and install with `npm install`
+Or you can manually clone from [github](https://github.com/angrykoala/chuckscript) and install with `npm install`
 
 
 You will need node and npm installed on your system

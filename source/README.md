@@ -1,6 +1,8 @@
 Angry Koala Blog
 ================
 
-Blog developed with [Hexo](https://hexo.io) <http://demiurgosoft.github.io>
+Blog developed with [Hexo](https://hexo.io)    
 
-For request, go to [Issues](https://github.com/demiurgosoft/demiurgosoft.github.io/issues), to check the source code or make changes, refer to [dev branch](https://github.com/demiurgosoft/demiurgosoft.github.io/tree/dev)
+You can access here: <http://angrykoala.github.io>
+
+For request, go to [Issues](https://github.com/angrykoala/angrykoala.github.io/issues), to check the source code or make changes, refer to [dev branch](https://github.com/angrykoala/angrykoala.github.io/tree/dev)
