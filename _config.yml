@@ -6,13 +6,13 @@
 title: Angry Koala
 subtitle: A Koala With a Computer
 description: A blog for programmers and koalas
-author: demiurgosoft
+author: angrykoala
 language: en
 timezone: Europe/Madrid
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://demiurgosoft.github.io/
+url: http://angrykoala.github.io/
 root: /
 permalink: :category/:title/
 permalink_defaults:
@@ -71,14 +71,14 @@ theme: concise
 # Menu
 menu:
   Archives: /archives
-  GitHub: https://github.com/demiurgosoft
+  GitHub: https://github.com/angrykoala
   About: /about
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:demiurgosoft/demiurgosoft.github.io.git
+  repo: git@github.com:angrykoala/angrykoala.github.io.git
 
 # No follow links (hexo-autonofollow)
 nofollow:

@@ -21,14 +21,14 @@ All ChuckScripts allow comments, and only the first command with the syntax `[0]
 
 ## Hello World!
 CNPL is fully functional, based on JavaScript. To start coding, just tweak this simple hello world:
-```
+```bash
 [0]{9582516168086304533950061199088375933762201813077804024987245718616842}
 ```
 *hello_world.cnpl*
 
 ## Installation
 You can install chuckScript from the official npm repository typing:    
-```
+```bash
 npm install -g chuckscript
 ```
 Or you can manually clone from [github](https://github.com/angrykoala/chuckscript) and install with `npm install`
@@ -40,13 +40,13 @@ You will need node and npm installed on your system
 ### CNI
 CNI (_Chuck Norris Interpreter_) is the official CNPL interpreter and allows you to execute CNPL (extension .cnpl) in your machine:
 
-```
+```bash
 cni myprogram.cnpl
 ```
 
 ### CNGEN
 Of course, CNPL is the only language you'll ever need again, however, to start learning it cni also brings a cnpl code generator, which will convert your old, un-epic JavaScript code into a bright new CNPL code, to use it:
-```
+```bash
 cngen myoldjs.js newsupercode.cnpl
 ```
 
