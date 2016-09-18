@@ -1,0 +1,184 @@
+---
+title: Yamp
+category: Programming
+date: 2016-09-18 00:45:42
+tags:
+---
+
+>Yet Another Markdown Parser
+
+[Markdown](https://en.wikipedia.org/wiki/Markdown) is cool. With a simple syntax[^1] is possible to create document form webpages to presentation slides (and, of course, this same blog you are reading). **Yamp** is here to simplify your work with markdown for whatever you are using it. Check Yamp in action [here](https://angrykoala.github.io/yamp/index.html).
+
+<!-- more -->
+
+## Features
+* HTML conversion
+* PDF conversion
+* Code highlight support
+* Github-style output
+* API to use _yamp_ programmatically
+* Custom styles
+* CSS-embedded HTML (just open it offline in any browser)
+* HTML tags support (for PDF output too)
+* Include other files in your markdown
+* [HTML presentations](https://remarkjs.com/)
+* Koalafied
+
+
+## Basic Manual
+Yamp allows you to convert a markdown file into other formats such as Html or Pdf. Also, it provides templates and styles out of the box to make the conversion as simple as possible.
+
+### Installation
+To install _yamp_ you can clone the project from [Github](https://github.com/angrykoala/yamp) or simple install it from the npm repository[^2].
+
+Assuming npm is installed in your system:
+```
+npm install -g yamp
+```
+* If you have the GitHub project, execute `npm install -g .`
+
+_Yamp requires Node.js version 4.0.0 or higher_
+
+### Usage
+With `yamp my_file.md` your markdown file will be converted to pdf directly
+* To convert to html use: `yamp my_file.md --html`
+* To convert to html and pdf use: `yamp my_file.md --html --pdf`
+
+There are several options in _yamp_:
+
+* `-h`, `--help` to display a basic usage information
+* `-V`, `--version` to display _yamp_ version installed
+* `-o`, `--output <file>` output filename (without extension) e.g. `yamp my_file.md -o final_name`
+* `--pdf` to generate a pdf (default)
+* `--html`to generate html
+* `--remark`to generate a html presentation using [remark](https://remarkjs.com)
+* `-t`, `--title [value]` to add a custom title to Html pages
+* `--style <file>` to set a custom CSS stylesheet
+    * Option not suported along with `--no-style`
+* `--no-style` to disable CSS styling
+    * Options not supported along with `--style <file>`
+* `--minify` to minify Html output
+* `--no-tags` to disable custom Yamp tags
+* `--no-highlight` to disable code [highlight](https://highlightjs.org)
+* `-k`, `--koala` to koalify your outputs
+
+
+### Yamp tags
+
+_Yamp_ supports extra tags in your markdown files. Currently using [xejs](https://github.com/angrykoala/xejs) templates. All tags are written between double braces `{%raw%}{{ ... }}{%endraw%}` and are not case-sensitive.
+
+* `{%raw%}{{include [file.md]}}{%endraw%}`: Includes the given text file (markdown or not), the tags on the included file will also be parsed, allowing nested file structure.
+* `{%raw%}{{date}}{%endraw%}`: Will write the current date (at the moment of rendering).
+* `{%raw%}{{page break}}{%endraw%}`: Will force a page break in pdf output.
+* `{%raw%}{{yamp version}}{%endraw%}`: Will display the yamp version used to render the document.
+
+For example, if we have the documents:
+
+```md
+## My title
+
+This is the first file
+{%raw%}{{include file2.md}}{%endraw}
+{%raw%}{{page break}}{%endraw}
+The end
+```
+_file1.md_
+
+```md
+This is the second file
+```
+_file2.md_
+
+The resulting file will be:
+```md
+## My title
+
+This is the first file
+This is the second file
+The end
+```
+
+And when rendered into pdf, The end will be in a different page
+
+
+## For Pros
+Yamp can also be used as a npm module:
+
+To install yamp as dependency:
+```
+npm install --save yamp
+```
+
+To add it as a node.js dependency:
+```
+var yamp=require('yamp');
+```
+
+### Yamp API
+Include _yamp_ in your javascript with:
+```js
+var yamp = require('yamp');
+```
+
+You'll have access to different _renderers_ to process your files:
+* `yamp.renderers.html` to process a markdown file into an full Html page
+* `yamp.renderers.pdf` to process a markdown into a pdf
+
+To use a renderer:
+```js
+var myRenderer = new renderers.pdf(options);
+renderer.renderFile(myFile, function(err){
+    if (err) return console.log("Error while rendering: "+err);
+    else console.log("Rendering was successful");
+});
+```
+
+#### Options
+The options accepted by the default renderers are:
+
+* **outputFilename**: name of the output filename (without extension), will default to the input filename
+* **highlight**: (_true_) indicates if code blocks should be highlighted
+* **style**: (_true_) indicates if default style should be used or no style at all. If a filename is passed, it will use it as custom css style
+* **minify**: (_false_) whether the Html output should be minified or not
+* **title**: Custom title for the Html page
+* **tags**: (_true_) whether to parse yamp tags or not (`{%raw%}{{ ... }}{%endraw%}`) 
+* **koala**: (_false_) true to koalify your outputs
+
+### Creating new renderers
+If you need a custom renderer, instead of using one of the defaults you can extend directly from **Renderer** class or any of the default renderers:
+
+```js
+class MyCustomRenderer extends yamp.Renderer {
+    constructor(options) {
+        super(options, "default.ejs", yamp.parsers.md2Html);
+        this.output="html"; //desired output extension
+    }
+
+    beforeLoad(filename){
+        //Modify filename or this.fileLoader before loading it
+    }
+
+
+    beforeRender(templateOptions) {
+        // Modify the data passed to the template before rendering, including title, content and options
+    }
+    
+    afterRender(content) {
+        // Modify template result (Html)
+    }
+
+    fileOutput(content,done) {
+        // Write file (preferably to this.options.outputFilename) in the desired format using a parser
+    }
+}
+```
+
+**Custom parser:** It is possible to use a custom parser from markdown to Html instead of the built-in _yamp.parsers.md2html_, the parser must be a function of the type `function(originalString,options,callback)` that will translate from `originalString` (markdown) to html, calling the `callback(err,res)` afterwards.
+
+If, instead of extending from `yamp.Renderer` you are extending from one of the default renderers, you should only re-implement the methods you need, and usually you should call `super().methodName` to maintain its basic functionality.
+
+
+### Bibliography
+
+[^1]: Mastering markdown: <https://guides.github.com/features/mastering-markdown>
+[^2]: What is npm?: <https://docs.npmjs.com/getting-started/what-is-npm>
