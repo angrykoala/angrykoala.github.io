@@ -1,7 +1,7 @@
 ---
 title: Yamp
 category: Programming
-date: 2016-09-18 00:45:42
+date: 2016-09-18 01:55:00
 tags:
 ---
 
@@ -23,7 +23,6 @@ tags:
 * Include other files in your markdown
 * [HTML presentations](https://remarkjs.com/)
 * Koalafied
-
 
 ## Basic Manual
 Yamp allows you to convert a markdown file into other formats such as Html or Pdf. Also, it provides templates and styles out of the box to make the conversion as simple as possible.
