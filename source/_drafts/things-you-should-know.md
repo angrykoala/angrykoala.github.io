@@ -74,7 +74,7 @@ Over many a quaint and curious volume of forgotten lore,
 As you can see, the raw markdown text is easily readable, without a huge amount of confusing marks 
 
 ### Rendering Markdown
-A lot of editors and programs can render markdown. [Atom](https://atom.io) provides a visual markdown renderer, [markdonw-pdf](https://www.npmjs.com/package/markdown-pdf) can easily generate a PDF from your markdown though HTML. [Pandoc](http://pandoc.org) will allow to generate Latex files or Latex-style pdfs, some online editors like [StackEdit](https://stackedit.io) or [Dillinger](http://dillinger.io) provides also an easy to use markdown visual renders.
+A lot of editors and programs can render markdown. [Atom](https://atom.io) provides a visual markdown renderer, [markdown-pdf](https://www.npmjs.com/package/markdown-pdf) can easily generate a PDF from your markdown though HTML. [Pandoc](http://pandoc.org) will allow to generate Latex files or Latex-style pdfs, some online editors like [StackEdit](https://stackedit.io) or [Dillinger](http://dillinger.io) provides also an easy to use markdown visual renders.
 
 </br>
 ## XML
