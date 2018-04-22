@@ -1,6 +1,6 @@
 ---
 title: Yerbamate
-category: Programming
+category: Project
 date: 2016-10-23 12:27:10
 tags:
 ---

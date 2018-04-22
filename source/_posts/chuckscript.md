@@ -1,6 +1,6 @@
 ---
 title: ChuckScript
-category: Programming
+category: Project
 date: 2016-07-20 11:42:04
 tags:
 ---
@@ -9,7 +9,7 @@ Chuck Norris can code using binary without 1, with Chuck Norris Programming Lang
 
 Here I present an esoteric programming language based on the [Unary esoteric language](https://esolangs.org/wiki/Unary) developed with _javaScript_
 
-<!-- more --> 
+<!-- more -->
 
 ## Syntax
 The syntax is probably the easiest to learn: `0` is the only command you'll need. What does `0` do? Everything.

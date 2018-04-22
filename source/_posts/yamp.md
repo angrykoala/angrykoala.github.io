@@ -1,6 +1,6 @@
 ---
 title: Yamp
-category: Programming
+category: Project
 date: 2016-09-18 01:55:00
 tags:
 ---
@@ -140,7 +140,7 @@ The options accepted by the default renderers are:
 * **style**: (_true_) indicates if default style should be used or no style at all. If a filename is passed, it will use it as custom css style
 * **minify**: (_false_) whether the Html output should be minified or not
 * **title**: Custom title for the Html page
-* **tags**: (_true_) whether to parse yamp tags or not (`{%raw%}{{ ... }}{%endraw%}`) 
+* **tags**: (_true_) whether to parse yamp tags or not (`{%raw%}{{ ... }}{%endraw%}`)
 * **koala**: (_false_) true to koalify your outputs
 
 ### Creating new renderers
@@ -161,7 +161,7 @@ class MyCustomRenderer extends yamp.Renderer {
     beforeRender(templateOptions) {
         // Modify the data passed to the template before rendering, including title, content and options
     }
-    
+
     afterRender(content) {
         // Modify template result (Html)
     }
