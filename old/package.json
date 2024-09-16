@@ -1,0 +1,45 @@
+{
+    "name": "angrykoala.github.io",
+    "version": "0.3.0",
+    "description": "A web about programming and koalas",
+    "main": "index.js",
+    "dependencies": {},
+    "private": true,
+    "devDependencies": {},
+    "scripts": {
+        "start": "hexo server",
+        "deploy": "hexo clean; hexo deploy -g"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/angrykoala/angrykoala.github.io.git"
+    },
+    "browserslist": {
+        "production": [
+            ">0.5%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 3 chrome version",
+            "last 3 firefox version",
+            "last 5 safari version"
+        ]
+    },
+    "engines": {
+        "node": ">=18.0"
+    },
+    "keywords": [
+        "blog",
+        "programming",
+        "koala",
+        "angry",
+        "angrykoala"
+    ],
+    "author": "angrykoala <angrykoala@outlook.es>",
+    "license": "AGPL-3.0",
+    "bugs": {
+        "url": "https://github.com/angrykoala/angrykoala.github.io/issues"
+    },
+    "homepage": "https://github.com/angrykoala/angrykoala.github.io#readme"
+}
