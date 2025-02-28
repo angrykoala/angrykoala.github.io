@@ -61,19 +61,20 @@ const config: Config = {
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
         navbar: {
-            title: "My Site",
+            title: "Angrykoala",
             logo: {
-                alt: "My Site Logo",
-                src: "img/logo.svg",
+                alt: "Angrykoala Logo",
+                src: "img/octokoala.png",
             },
             items: [
-                {
-                    type: "docSidebar",
-                    sidebarId: "tutorialSidebar",
-                    position: "left",
-                    label: "Tutorial",
-                },
+                // {
+                //     type: "docSidebar",
+                //     sidebarId: "tutorialSidebar",
+                //     position: "left",
+                //     label: "Tutorial",
+                // },
                 { to: "/blog", label: "Blog", position: "left" },
+                { type: "docSidebar", sidebarId: "projectsSidebar", label: "Projects", position: "left" },
                 {
                     href: "https://github.com/facebook/docusaurus",
                     label: "GitHub",
