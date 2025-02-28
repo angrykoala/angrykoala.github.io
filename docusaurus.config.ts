@@ -73,10 +73,10 @@ const config: Config = {
                 //     position: "left",
                 //     label: "Tutorial",
                 // },
-                { to: "/blog", label: "Blog", position: "left" },
                 { type: "docSidebar", sidebarId: "projectsSidebar", label: "Projects", position: "left" },
+                { to: "/blog", label: "Blog", position: "left" },
                 {
-                    href: "https://github.com/facebook/docusaurus",
+                    href: "https://github.com/angrykoala",
                     label: "GitHub",
                     position: "right",
                 },
@@ -86,16 +86,7 @@ const config: Config = {
             style: "dark",
             links: [
                 {
-                    title: "Docs",
-                    items: [
-                        {
-                            label: "Tutorial",
-                            to: "/docs/intro",
-                        },
-                    ],
-                },
-                {
-                    title: "Community",
+                    title: "More",
                     items: [
                         {
                             label: "Stack Overflow",
@@ -104,15 +95,6 @@ const config: Config = {
                         {
                             label: "GitHub",
                             href: "https://github.com/angrykoala",
-                        },
-                    ],
-                },
-                {
-                    title: "More",
-                    items: [
-                        {
-                            label: "Blog",
-                            to: "/blog",
                         },
                     ],
                 },
