@@ -1,11 +1,10 @@
 ---
 sidebar_position: 3
+title: Gaucho
 ---
 
-# Gaucho
+# ![Gaucho Icon](./gaucho.png) Gaucho
 
-![Gaucho Icon](gaucho.png)
+[Gaucho](https://angrykoala.github.io/gaucho) is an open-source, customizable task launcher to run your apps, commands or scripts.. Built with Node.js, Electron and Vue.js
 
-https://angrykoala.github.io/gaucho
-
-A graphical task runner, suitable for easy to configure tasks and scripts. Built with Node.js, Electron and Vue.js
+![Preview](./gaucho_preview.png)

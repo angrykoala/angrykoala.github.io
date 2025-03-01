@@ -2,17 +2,6 @@
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
-Link / repost posts:
-
--   [ ] https://medium.com/neo4j/how-we-build-a-clone-of-r-place-with-graphql-c8b053b3cff9
--   [ ] https://medium.com/neo4j/improving-a-node-js-graphql-server-performance-645a4ae711c3
-
-New Posts:
-
--   [ ] Cypher builder https://medium.com/p/a8ee606c8ee4/
--   [ ] Minfck
--   [ ] My Guitar Tabs
-
 ### Installation
 
 ```

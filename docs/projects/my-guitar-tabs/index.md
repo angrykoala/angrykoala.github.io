@@ -1,9 +1,10 @@
 ---
 sidebar_position: 2
+title: My Guitar Tabs
 ---
 
-# My Guitar Tabs
+# ![My Guitar Tabs Logo](./logo.png) My Guitar Tabs
 
-My Guitar Tabs is a web and app to write Guitar Tabs
+[My Guitar Tabs](http://my-guitar-tabs.com) is a web and mobile app to write Guitar Tabs.
 
-It is available [here](http://my-guitar-tabs.com)
+![My Guitar Tabs preview](./preview.png)
