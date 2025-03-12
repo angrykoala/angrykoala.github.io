@@ -9,6 +9,8 @@ draft: true
 
 This is a follow-up of [Part 1](../2025-03-10-mindfck-devlog-1/)
 
+<!-- truncate -->
+
 ## Memory Access
 
 ### Fixing Loops

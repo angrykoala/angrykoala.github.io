@@ -32,7 +32,15 @@ const config: Config = {
         defaultLocale: "en",
         locales: ["en"],
     },
-
+    scripts: [
+        {
+            // <script defer src="https://cloud.umami.is/script.js" data-website-id="46b9bebb-7931-4cb6-b7cd-b210264c00c4"></script>
+            src: "https://cloud.umami.is/script.js",
+            async: true,
+            "data-website-id": "46b9bebb-7931-4cb6-b7cd-b210264c00c4",
+            "data-domains": "angrykoala.xyz",
+        },
+    ],
     presets: [
         [
             "classic",
