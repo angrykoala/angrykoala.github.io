@@ -7,9 +7,9 @@ draft: true
 
 # Mindfck Devlog 1: Making a High Level Programming Language to Brainfuck
 
-A few months ago. I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). A simple, easy to use language that transpiles to the infamous brainfuck[^7]. In this and following posts I'll write down the journey of making this ridiculous project with its challenges and solutions.
+A few months ago, I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). It's a simple, easy-to-use language that transpiles to the infamous brainfuck[^7]. In this and following posts, I'll document the journey of making this ridiculous project, along with its challenges and solutions.
 
-With Mindfck, a fairly innocuous code such as:
+With Mindfck, a fairly innocuous piece of code like:
 
 ```c
 int a
@@ -33,11 +33,11 @@ Transpiles to:
 
 <!-- truncate -->
 
-Building a high level, usable language that transpiles to brainfuck is a useless project on itself; it is great, however, for learning language programming and crafting tools for dealing with less than ideal environments. I believe the approach I've taken to make this possible may be of use for solving real world problems.
+Building a high-level, usable language that transpiles to brainfuck is a useless project on its own; it is great, however, for learning language design and creating tools to handle less-than-ideal environments. I believe the approach I've taken to make this possible may be useful for solving real-world problems.
 
 ## Let's Talk About Brainfuck
 
-Brainfuck is a (in)famously hard language to program with, however, it is surprisingly easy to learn. Luckily, you don't have to become an expert, I certainly didn't!
+Brainfuck is an (in)famously difficult language to program with; however, it is surprisingly easy to learn. Luckily, you don't have to become an expert, I certainly didn't!
 
 ### Brainfuck Primer
 
@@ -48,9 +48,9 @@ In a nutshell, a brainfuck program works with a list of bytes and a single point
 |  0  |  0  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-> Note that all bytes are initialized to 0. In memory diagrams I've numbered the bytes to better visualize what is happening. These indexes are irrelevant to brainfuck.
+> Note that all bytes are initialized to 0. In memory diagrams, I've numbered the bytes to better visualize what is happening. These indexes are irrelevant to brainfuck.
 
-Brainfuck code is composed of 8 instructions[^1]. Each one is represented with a single character.Any other character is ignored and is considered a _comment_.Here is a cheatsheet:
+Brainfuck code is composed of 8 instructions[^1]. Each one is represented with a single character. Any other character is ignored and is considered a _comment_.Here is a cheatsheet:
 
 | Command |                    Description                     |
 | :-----: | :------------------------------------------------: |
@@ -59,7 +59,7 @@ Brainfuck code is composed of 8 instructions[^1]. Each one is represented with a
 |   `+`   |                Increment byte by 1                 |
 |   `-`   |                Decrement byte by 1                 |
 |   `.`   |          Print byte as an ascii character          |
-|   `,`   |             Reads ascii character byte             |
+|   `,`   |           Reads an ASCII character byte            |
 |   `[`   | Begin Loop: if byte is zero, jump to matching `]`  |
 |   `]`   | End Loop: If byte is nonzero, jump to matching `[` |
 
@@ -78,7 +78,7 @@ Finishes with the memory ain the following state:
 |  0  |  2  |  2  |  0  | ... |
 |     |     |  ^  |     |     |
 
-With `.` and `,` we can write or read a byte into and from memory (as aschii characters):
+With `.` and `,`, we can write or read a byte into and from memory (as ASCII characters):
 
 ```brainfuck
 ,+.
@@ -98,21 +98,21 @@ A more complex example using loops:
 >>+<+<+[+>]
 ```
 
-The first part of the code: `>>+<+<+` initializes the memory as follows:
+The first part of the code, `>>+<+<+`, initializes the memory as follows:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  1  |  1  |  1  |  0  | ... |
 |  ^  |     |     |     |     |
 
-The loop `[+>]` will increment 1 and move right until the selected byte is 0. In this case it will add 1 to all non-zero values until the first 0 is reached:
+The loop `[+>]` will increment 1 and move right until the selected byte is 0. In this case it will add 1 to all non-zero values until it reaches 0:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  2  |  2  |  2  |  0  | ... |
 |     |     |     |  ^  |     |
 
-> Note that infinite loops are easy to come by in brainfuck. Changing the example above to `[>+]`, the program will never end, because it increments the current byte before the loops end
+> Note that infinite loops are easy to come by in brainfuck. Changing the example above to `[>+]` causes the program to run indefinitely because it increments the current byte before the loops end
 
 You can try playing around with brainfuck using any online interpreter[^2].
 
@@ -344,7 +344,7 @@ So, we end up with a new byte (2):
 | 10  | 20  | 30  |  0  | ... |
 |     |     |  ^  |     |     |
 
-Well, instead of jumping straight into brainfuck, let's plan how to achieve using the previous algorithms:
+Well, instead of jumping straight into brainfuck, let's plan how to achieve this using the previous algorithms:
 
 1. Copy byte 0 into byte 2
 2. Increment byte 2 by the same value of byte 1
@@ -501,9 +501,7 @@ func (c *CommandHandler) Copy(to int, temp int) {
 }
 ```
 
-> These commands should be fairly simple to follow. The only quirky code are the calls to `MovePointer`. Because we are always dealing with relative positions rather than absolute, we need to keep subtracting the last pointer position to return to the original source byte.
-
-Just by having some basic commands and helpers, I can already start composing the more complex ones, such as `Add` with very little actual brainfuck going into their implementations:
+Just by having some basic commands and helpers, We can compose more complex algorithms like addition with very little actual brainfuck going into their implementations:
 
 ```go title="commands.go"
 // Adds byte y to current byte, using temp,
@@ -515,7 +513,7 @@ func (c *CommandHandler) AddCell(y int, temp int) {
 }
 ```
 
-With this helper class, I can start building some (very) basic programs:
+Using this helper class, We can start building some (very) basic programs:
 
 ```go title="main.go"
 cmd := bfwriter.NewCommandHandler()
@@ -544,11 +542,9 @@ The resulting memory state:
 | 20  | 48  |  0  |  0  | ... |
 |     |  ^  |     |     |     |
 
-This is starting to look like an useful tool to generate brainfuck code. I'm being quite loose with the term "useful".
+This is starting to look like an useful tool to generate brainfuck code. This is still far from the promised language. At the moment, any code using these commands require to manually handle the pointer, which is prone to errors and one of the hardest parts of programming brainfuck.
 
-Of course, this is still far from the promised language. At the moment, any code using these commands require to manually handle the pointer, which is prone to errors and one of the hardest parts of programming brainfuck.
-
-In the next devlog, I'll cover how to improve the access to memory, so we don't need to deal with relative pointers anymore, and eventually ignore the pointer altogether! This will make this a proper brainfuck code generation tool.
+In the next devlog, I'll cover how to improve memory access, so we don't need to deal with relative pointers anymore. Eventually we will be able to ignore the pointer altogether!
 
 [^1]: [Wikipedia - Brainfuck Language Design](https://en.wikipedia.org/wiki/Brainfuck#Language_design)
 [^2]: [Nayuki Brainfuck Interpreter](https://www.nayuki.io/page/brainfuck-interpreter-javascript)
