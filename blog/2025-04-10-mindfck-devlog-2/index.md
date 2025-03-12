@@ -1,6 +1,8 @@
 ---
+slug: mindfck-devlog-2
+date: 2025-04-10
+tags: [Esolangs, Go]
 draft: true
-tags: [Esolangs]
 ---
 
 # Mindfck: A High Level Programming Language to Brainfuck Devlog 2
@@ -22,6 +24,10 @@ This is a follow-up of [Part 1](../2025-03-10-mindfck-devlog-1/)
 ## Level Up: 16-bit Integers
 
 ## Some Optimizations
+
+## Arrays
+
+### Dynamic access to array ?
 
 **Dirty Bytes**
 

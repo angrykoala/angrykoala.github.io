@@ -1,13 +1,15 @@
 ---
+slug: mindfck-devlog-1
+date: 2025-03-13
+tags: [Esolangs, Go]
 draft: true
-tags: [Esolangs]
 ---
 
-# Mindfck: A High Level Programming Language to Brainfuck Devlog 1
+# Mindfck Devlog 1: Making a High Level Programming Language to Brainfuck
 
-A few months ago. I decided to embark on another esolang project: [Minfck](https://github.com/angrykoala/mindfck), a simple, easy to use, language that transpiles to the infamous [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck). In this and following posts I'll describe the journey of making this ridiculous project, challenges and solutions.
+A few months ago. I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). A simple, easy to use language that transpiles to the infamous brainfuck[^7]. In this and following posts I'll write down the journey of making this ridiculous project with its challenges and solutions.
 
-With Mindfck, a fairly inocuous code such as:
+With Mindfck, a fairly innocuous code such as:
 
 ```c
 int a
@@ -23,7 +25,7 @@ c = a + b
 print c
 ```
 
-Transpiles to
+Transpiles to:
 
 ```brainfuck
 >>>>[-]>[-]+++>>>[-]<<[-]<<[>>+>>+<<<<-][-]>>>>[<<<<+>>>>-][-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-][-]<<<<<<<<[>>>>>>>>+<<+<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-]>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<[-]>>>>>>[<<<<<<+>>>>+>>-][-]<<[>>+<<-][-]<<<[-]>>>>>>[<<<<<<+>>>+>>>-][-]<<<[>>>+<<<-][-]>[-]+++++++++++++++++++++++++++++++++>>>[-]<<[-]<<[>>+>>+<<<<-][-]>>>>[<<<<+>>>>-][-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-][-]<<<<<<<<[>>>>>>>>+<<+<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-]>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<[-]>>>>>>[<<<<<<+>>>>+>>-][-]<<[>>+<<-][-]<<<[-]>>>>>>[<<<<<<+>>>+>>>-][-]<<<[>>>+<<<-][-]>[-]++>>>[-]<<[-]<<<<<<[>>>>>>+>>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-][-]<<<<[>>>>+<<+<<-][-]>>>>[<<<<+>>>>-]>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<[-]>>>>>>[<<<<<<+>>>>+>>-][-]<<[>>+<<-][-]<<<[-]>>>>>>[<<<<<<+>>>+>>>-][-]<<<[>>>+<<<-]>>[-]>[-]+++++++++++++++++++++>>>[-]<<[-]<<<<<<<<[>>>>>>>>+>>+<<<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-][-]<[-]<<<<<<<<[>>>>>>>>+>+<<<<<<<<<-][-]>>>>>>>>>[<<<<<<<<<+>>>>>>>>>-][-]<<<<[>>>>+<<+<<-][-]>>>>[<<<<+>>>>-]>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<<<[-]>>>>>>>>[<<<<<<<<+>>>>>>+>>-][-]<<[>>+<<-][-]<<<<<[-]>>>>>>>>[<<<<<<<<+>>>>>+>>>-][-]<<<[>>>+<<<-][-]>[-]++>>>[-]<<[-]<<<<<<<<[>>>>>>>>+>>+<<<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-][-]<[-]<<<<<<<<[>>>>>>>>+>+<<<<<<<<<-][-]>>>>>>>>>[<<<<<<<<<+>>>>>>>>>-][-]<<<<[>>>>+<<+<<-][-]>>>>[<<<<+>>>>-]>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<<<[-]>>>>>>>>[<<<<<<<<+>>>>>>+>>-][-]<<[>>+<<-][-]<<<<<[-]>>>>>>>>[<<<<<<<<+>>>>>+>>>-][-]<<<[>>>+<<<-][-]>[-]++++++++++>>>[-]<<[-]<<[>>+>>+<<<<-][-]>>>>[<<<<+>>>>-][-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-][-]<<<<<<<<<<[>>>>>>>>>>+<<+<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-]>[-]<[-]<<<<<<<<<[>>>>>>>>>+>+<<<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-]<<<<[-]<<<<[-]>>>>>>[<<<<<<+>>>>+>>-][-]<<[>>+<<-][-]<<<[-]>>>>>>[<<<<<<+>>>+>>>-][-]<<<[>>>+<<<-]>>[-]<<[-]<<<<<<[>>>>>>+>>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-][-]<<<<<<[>>>>>>+<<+<<<<-][-]>>>>>>[<<<<<<+>>>>>>-]>[-]<[-]<<<<<[>>>>>+>+<<<<<<-][-]>>>>>>[<<<<<<+>>>>>>-]<[<+>>[-]+>>[-]<[-]<<<[>>>+>+<<<<-][-]>>>>[<<<<+>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<+>>>>[-]]<<-][-]<<<<[-]>>[<<+>>>>+<<-][-]>>[<<+>>-][-]<<<[-]>>[<<+>>>+<-][-]>[<+>-][-]<<[-]<<[>>+>>+<<<<-][-]>>>>[<<<<+>>>>-][-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-]>[-]++++++++++>[-]>[-]>[-]>[-]>[-]<<<<<<[-]>>>>>>>[-]+>>>[-]<[-]<<<<<<<<<<<[>>>>>>>>>>>+>+<<<<<<<<<<<<-][-]>>>>>>>>>>>>[<<<<<<<<<<<<+>>>>>>>>>>>>-]<[<<[-]>>[-]]>[-]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[<<[-]>>[-]]<[-]+>>[-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-]<[<->[-]]<[<<<<<<+>>>>>>>>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<<<<<<<<<[>>>>>>>>>+<-<<<<<<<<-][-]>>>>>>>>>[<<<<<<<<<+>>>>>>>>>-]<<<<<<<<<<[-]+>>>>>>>>>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<[-]>>>>>>>>>>[-]]<[-]<<<<<<<<<[>>>>>>>>>+>+<<<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-]<[<<<<<<<[-]>+>>>>>>>>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<<<<<<<<<<[>>>>>>>>>>+<-<<<<<<<<<-][-]>>>>>>>>>>[<<<<<<<<<<+>>>>>>>>>>-]<<<<<<<<<<<[-]+>>>>>>>>>>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<[-]>>>>>>>>>>>[-]]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[<<<<<<<[-]>+>>>>>>>>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<<<<<<<<<<<[>>>>>>>>>>>+<-<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<<<<<<<<<<<<[-]+>>>>>>>>>>>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<<[-]>>>>>>>>>>>>[-]]<[-]<<<<<<<<<<<[>>>>>>>>>>>+>+<<<<<<<<<<<<-][-]>>>>>>>>>>>>[<<<<<<<<<<<<+>>>>>>>>>>>>-]<[<<<<<<<[-]>+>>>>>>>>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<<<<<<<<<<<<[>>>>>>>>>>>>+<-<<<<<<<<<<<-][-]>>>>>>>>>>>>[<<<<<<<<<<<<+>>>>>>>>>>>>-]<<<<<<<<<<<<<[-]+>>>>>>>>>>>>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<<<[-]>>>>>>>>>>>>>[-]]<[-]<<<<<<<<<<<<[>>>>>>>>>>>>+>+<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>[<<<<<<<<<<<<<+>>>>>>>>>>>>>-]<[<<<<<<<[-]>+>>>>>>>>[-]<[-]<<<<<<<[>>>>>>>+>+<<<<<<<<-][-]>>>>>>>>[<<<<<<<<+>>>>>>>>-][-]<<<<<<<<<<<<<[>>>>>>>>>>>>>+<-<<<<<<<<<<<<-][-]>>>>>>>>>>>>>[<<<<<<<<<<<<<+>>>>>>>>>>>>>-]<<<<<<<<<<<<<<[-]+>>>>>>>>>>>>>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<<<<[-]>>>>>>>>>>>>>>[-]]<<[-]]<[-]]<[-]]<[-]]+>>[-]<[-]<<<<<<<<<<<[>>>>>>>>>>>+>+<<<<<<<<<<<<-][-]>>>>>>>>>>>>[<<<<<<<<<<<<+>>>>>>>>>>>>-]<[<->[-]]>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<<->>>>>>>>>>>>[-]]<<<<<<<<<<<->>>>>>>>[-]+>>>[-]<[-]<<<<<<<<<<<[>>>>>>>>>>>+>+<<<<<<<<<<<<-][-]>>>>>>>>>>>>[<<<<<<<<<<<<+>>>>>>>>>>>>-]<[<<[-]>>[-]]>[-]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[<<[-]>>[-]]<[-]+>>[-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-]<[<->[-]]<]<[-]++++++++++++++++++++++++++++++++++++++++++++++++>>[-]<[-]<<[>>+>+<<<-][-]>>>[<<<+>>>-]<[>[-]<<[>>+<<<+>-][-]>>[<<+>>-]<<<.>>[-]]+++>[-]+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>[-]>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<[-]>>>[<<+>>>[-<<<[-]>+>>]<<<[-<+>]>[->>+<<]>>-<-]<[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<[-]+>>>>>>>>>>>[-]]>[-]<[-]<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>+>+<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>-][-]<<<<[>>>>+<-<<<-][-]>>>>[<<<<+>>>>-]<<[-]+>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<[-]>>[-]]<[-]<[>+>+<<-][-]>>[<<+>>-]<[>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<<<<<<<<<<<<[-]>>>>>>>>>>>>>>[<<+>>>[-<<<[-]>+>>]<<<[-<<<<<<<<<<<<+>>>>>>>>>>>>]>[->>+<<]>>-<-]<<<[-]]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[>[-]<<<<[>>>>+<<<<<<+>>-][-]>>>>[<<<<+>>>>-]<<<<<<.>>>>>[-]]<<[-]>[-]+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>[-]>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<[-]>>>[<<+>>>[-<<<[-]>+>>]<<<[-<+>]>[->>+<<]>>-<-]<[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<[-]+>>>>>>>>>>>[-]]>[-]<[-]<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>+>+<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>-][-]<<<<[>>>>+<-<<<-][-]>>>>[<<<<+>>>>-]<<[-]+>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<[-]>>[-]]<[-]<[>+>+<<-][-]>>[<<+>>-]<[>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<<<<<<<<<<<<[-]>>>>>>>>>>>>>>[<<+>>>[-<<<[-]>+>>]<<<[-<<<<<<<<<<<<+>>>>>>>>>>>>]>[->>+<<]>>-<-]<<<[-]]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[>[-]<<<<[>>>>+<<<<<<<+>>>-][-]>>>>[<<<<+>>>>-]<<<<<<<.>>>>>>[-]]<<[-]>[-]+++++++++>[-]>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<[-]>>>[<<+>>>[-<<<[-]>+>>]<<<[-<+>]>[->>+<<]>>-<-]<[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<<<<<<<<<<[-]+>>>>>>>>>>>[-]]>[-]<[-]<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>+>+<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>-][-]<<<<[>>>>+<-<<<-][-]>>>>[<<<<+>>>>-]<<[-]+>>>[-]<[-]<[>+>+<<-][-]>>[<<+>>-]<[<<[-]>>[-]]<[-]<[>+>+<<-][-]>>[<<+>>-]<[>>>>>[-]<<[-]<<<<<<<<<<<<<<<<<[>>>>>>>>>>>>>>>>>+>>+<<<<<<<<<<<<<<<<<<<-][-]>>>>>>>>>>>>>>>>>>>[<<<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>>>-][-]<[-]<<<<<<[>>>>>>+>+<<<<<<<-][-]>>>>>>>[<<<<<<<+>>>>>>>-]<<<<[-]>[-]<<<<<<<<<<<<<[-]>>>>>>>>>>>>>>[<<+>>>[-<<<[-]>+>>]<<<[-<<<<<<<<<<<<+>>>>>>>>>>>>]>[->>+<<]>>-<-]<<<[-]]<[-]<<<<<<<<<<[>>>>>>>>>>+>+<<<<<<<<<<<-][-]>>>>>>>>>>>[<<<<<<<<<<<+>>>>>>>>>>>-]<[>[-]<<<<[>>>>+<<<<<<<<+>>>>-][-]>>>>[<<<<+>>>>-]<<<<<<<<.>>>>>>>[-]]<<<[>>>+<<<<<<<<+>>>>>-][-]>>>[<<<+>>>-]<<<<<<<<.
@@ -31,44 +33,52 @@ Transpiles to
 
 <!-- truncate -->
 
-Building a high level, understandable language that transpiles to Brainfuck is a useless project of doubtful interest, however, it is a great project for learning, not only about making languages, but about tackling a hostile environment, such as programming in Brainfuck.
+Building a high level, usable language that transpiles to brainfuck is a useless project on itself; it is great, however, for learning language programming and crafting tools for dealing with less than ideal environments. I believe the approach I've taken to make this possible may be of use for solving real world problems.
 
 ## Let's Talk About Brainfuck
 
-Brainfuck is a (in)famously hard language to program with, however, it is surprisingly easy to learn. In a nutshell, in a Brainfuck program you have a list of bytes and a single pointer, pointing to byte 0
+Brainfuck is a (in)famously hard language to program with, however, it is surprisingly easy to learn. Luckily, you don't have to become an expert, I certainly didn't!
+
+### Brainfuck Primer
+
+In a nutshell, a brainfuck program works with a list of bytes and a single pointer, pointing at the first byte:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  0  |  0  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-Brainfuck code is composed of 8 instructions[^1]:
+> Note that all bytes are initialized to 0. In memory diagrams I've numbered the bytes to better visualize what is happening. These indexes are irrelevant to brainfuck.
+
+Brainfuck code is composed of 8 instructions[^1]. Each one is represented with a single character.Any other character is ignored and is considered a _comment_.Here is a cheatsheet:
 
 | Command |                    Description                     |
 | :-----: | :------------------------------------------------: |
-|   `>`   |                 Increment pointer                  |
-|   `<`   |                 Decrement pointer                  |
-|   `+`   |                   Increment byte                   |
-|   `-`   |                   Decrement byte                   |
-|   `.`   |                    Output byte                     |
-|   `,`   |                     Input byte                     |
+|   `>`   |           Increment pointer (move right)           |
+|   `<`   |           Decrement pointer (move left)            |
+|   `+`   |                Increment byte by 1                 |
+|   `-`   |                Decrement byte by 1                 |
+|   `.`   |          Print byte as an ascii character          |
+|   `,`   |             Reads ascii character byte             |
 |   `[`   | Begin Loop: if byte is zero, jump to matching `]`  |
 |   `]`   | End Loop: If byte is nonzero, jump to matching `[` |
 
-So for example, the following:
+All commands target the current byte of the pointer.
+
+For example, the following program:
 
 ```brainfuck
->+>++
+>++>++ This comment is ignored
 ```
 
-Will leave the state of memory as:
+Finishes with the memory ain the following state:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
-|  0  |  1  |  2  |  0  | ... |
+|  0  |  2  |  2  |  0  | ... |
 |     |     |  ^  |     |     |
 
-With `.` and `,` we can write or read a byte into and from memory (as chars):
+With `.` and `,` we can write or read a byte into and from memory (as aschii characters):
 
 ```brainfuck
 ,+.
@@ -82,33 +92,35 @@ a
 b
 ```
 
-For a more complex example using loops:
+A more complex example using loops:
 
 ```brainfuck
 >>+<+<+[+>]
 ```
 
-The first part of the code: `>>+<+<+` will initialize the memory as follows:
+The first part of the code: `>>+<+<+` initializes the memory as follows:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  1  |  1  |  1  |  0  | ... |
 |  ^  |     |     |     |     |
 
-The loop `[+>]` will increment 1 and move left, until the selected byte is 0. What this means now is that it will add 1 to all non-zero values:
+The loop `[+>]` will increment 1 and move right until the selected byte is 0. In this case it will add 1 to all non-zero values until the first 0 is reached:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  2  |  2  |  2  |  0  | ... |
 |     |     |     |  ^  |     |
 
+> Note that infinite loops are easy to come by in brainfuck. Changing the example above to `[>+]`, the program will never end, because it increments the current byte before the loops end
+
 You can try playing around with brainfuck using any online interpreter[^2].
 
-### A Brainfuck Interpreter in Go
+### Making a Brainfuck Interpreter in Go
 
-Another interesting feature of Brainfuck is how trivial is to implement an interpreter of it in a couple of hours. It is a great exercise for learning a new language. A while ago I had to learn Go[^3], so of course I decided to write a Brainfuck interpreter for this.
+It is trivial to implement an interpreter for brainfuck in a couple of hours. A while ago I had to learn Go[^3]. As a learning exercise I decided to write a brainfuck interpreter, which soon devolved into the madness that is Mindfck.
 
-With a simple data structure to hold the memory as an array, pointer and output:
+We begin with a simple data structure to hold the memory as an array, a pointer and the output:
 
 ```go title="interpreter.go"
 package bfinterpreter
@@ -119,12 +131,12 @@ type Interpreter struct {
 	Memory []byte
 	memPtr int
 	Output []byte
-
-	ExecInstructions int
 }
 ```
 
-Running the interpreter is as easy as reading characters and performing the operations in a `switch` statement:
+> For those unfamiliar with Go[^3]. Go utilizes `struct` instead of classes. Uppercase properties and methods are public; lowercase are only accessible within the same package.
+
+Running the interpreter is as simple as reading characters and performing the operations in a `switch` statement, updating the structure:
 
 ```go title="interpreter.go"
 // ...
@@ -155,22 +167,27 @@ func (interpreter *Interpreter) Run(code string) {
 
 You can find the full code in [GitHub](https://github.com/angrykoala/mindfck/blob/master/bfinterpreter/interpreter.go).
 
-There are only a few implementations details that are worth mentioning for this post:
+There are a few conventions worth mentioning:
 
 -   The memory size is not specified in this implementation, other implementations may impose a strict limit on memory size.
--   This implementation supports "byte wrapping", this is that if a byte overflows (> 255) it will wrap to 0. Same if it underflows.
--   This implementation does not support memory wrapping, if the pointer underflows (< 0) it will panic.
+-   This implementation supports _"byte wrapping"_. If a byte overflows (> 255) it will wrap to 0. If it underflows (< 0) it will wrap to 0.
+-   This implementation does not support _"memory wrapping"_, if the pointer underflows (< 0) it will panic.
+
+> Different interpreters may have slightly different conventions[^8], which some programs may rely on.
+>
+> The code in this project will not rely on neither, byte nor memory wrapping[^9]. This means that code generated with Mindfck can be directly run on most common brainfuck interpreters.
 
 #### Custom Debugger
 
-An advantage of building your own interpreter, is that you can add whatever tooling you may need. In this case, I added an extra command `#` which prints debugging information:
+An advantage of building your own interpreter, is that you can add whatever tooling you need. In this case, I added an extra command `#` which prints debugging information:
 
-```go title="interpreter.go"
-// ...
-
-case '#':
+```go title="interpreter.go "
+func (interpreter *Interpreter) Run(code string) {
+	// ...
+		case '#':
 			interpreter.Debug()
-
+	// ...
+}
 
 func (interpreter *Interpreter) Debug() {
 	fmt.Println("Memory:", interpreter.Memory)
@@ -179,36 +196,37 @@ func (interpreter *Interpreter) Debug() {
 }
 ```
 
-Brainfuck, by design, ignores any invalid command (considering these comments) so code written with this extra debugging command will just be ignored by other interpreters[^4].
+Brainfuck, by design, ignores any invalid command, considering these comments, so code written with this extra debugging command will just be ignored by other interpreters[^4].
 
-### Some Basic Algorithms
+### Basic Algorithms
 
-Before embarking on making a full featured language, I had to learn a bit of Brainfuck, my knowledge before this project of Brainfuck programming was basically nil. So my first step was to try and learn some basic algorithms[^5].
+Before embarking on making a full featured language I had to learn a bit more of brainfuck. My knowledge of this language before this project was pitiful, other than making interpreters. So my first step was to learn some basic algorithms[^5].
 
-**Reset Byte**
-One of the most basic algorithms with some utility is resetting a byte:
+**Reset Byte**  
+Arguably, the most basic algorithm with some utility is resetting a byte:
 
 ```brainfuck
 [-]
 ```
 
-This algorithm will loop while decrementing the current byte until it is zero, at which point it will get out of the loop. This is particularly useful, because brainfuck doesn't have a mechanism of setting the bytes to a certain value (except for input (`,`)), it needs to be done by incrementing (`+`) so being able to reset a byte is necessary to reuse memory bytes.
+This algorithm will loop while decrementing the current byte until it is zero, at which point it will get out of the loop. This is particularly useful, because brainfuck doesn't have a mechanism of setting bytes to a certain value (except when using input: `,`). This needs to be done by incrementing `+` or decrementing `-`, so being able to reset a byte is necessary to reuse memory bytes.
 
-For example, setting a position to 3, regardless of current value:
+For example, setting a byte to 3, regardless of the value it had before:
 
 ```brainfuck
 [-]+++
 ```
 
 **Move Byte**
-Moving bytes is the basis of most other algorithms, in this case, we want to go from the following memory setup:
+
+Moving bytes is the base of most other algorithms, in this case, we want to go move the value in position 0:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 48  |  0  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-To
+To position 2:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
@@ -219,13 +237,42 @@ To
 [>>+<<-]
 ```
 
-The first part of the loop `>>+` increments the target byte by one, then `<<-` will decrement the origin byte by one. This byte is acting as a counter, when the byte reaches 0, the loop will finish. Note that this loops needs to end in the original byte, as this is acting as a counter.
+Let's breakdown this loop:
+
+1. The first part `>>+` increments the target byte by one:
+
+    |  0  |  1  |  2  |  3  | ... |
+    | :-: | :-: | :-: | :-: | :-: |
+    | 48  |  0  |  1  |  0  | ... |
+    |     |     |  ^  |     |     |
+
+2. The second part `<<-` decrements the source byte by one:
+
+    |  0  |  1  |  2  |  3  | ... |
+    | :-: | :-: | :-: | :-: | :-: |
+    | 47  |  0  |  1  |  0  | ... |
+    |  ^  |     |     |     |     |
+
+3. Rinse and repeat.
+
+When the source byte reaches 0, the loop will finish, and the target byte will contain the same value as the source had at the beginning:
+
+|  0  |  1  |  2  |  3  | ... |
+| :-: | :-: | :-: | :-: | :-: |
+|  0  |  0  | 48  |  0  | ... |
+|  ^  |     |     |     |     |
+
+Note that this loops must end pointing to the source byte on each iteration, as this byte is acting as a counter.
 
 This algorithm assumes the target variable is 0 at the beginning. What if it is not? We can just reset!
 
 ```brainfuck
->>[-]<<[>>+<<-]
+>>[-] Reset byte 2
+<< Go to byte 0
+[>>+<<-] Move byte 0 to byte 2
 ```
+
+> Remember brainfuck ignores all invalid characters, so the previous snipped is valid brainfuck that you can copy and paste.
 
 **Copy Byte**
 
@@ -235,76 +282,93 @@ What if instead of moving the byte, we want a full copy of it?. Well, to do this
 [>>+<+<-]>[<+>-]
 ```
 
-Ok, it starting to get hard to follow, bear with me:
+Ok, it starting to get a bit tricky, bear with me:
 
-The first loop is doing something very similar to move byte, with some extra steps:
+The first loop `[>>+<+<-]` is doing something very similar to move byte, with some extra steps:
 
-1. `>>+` Go to target byte and increment
-2. `<+` Go to buffer byte and increment
+1. `>>+` Go to target byte (2) and increment
+
+    |  0  |  1  |  2  |  3  | ... |
+    | :-: | :-: | :-: | :-: | :-: |
+    | 48  |  0  |  1  |  0  | ... |
+    |     |     |  ^  |     |     |
+
+2. `<+` Go to buffer byte (1) and increment
+
+    |  0  |  1  |  2  |  3  | ... |
+    | :-: | :-: | :-: | :-: | :-: |
+    | 48  |  1  |  1  |  0  | ... |
+    |     |  ^  |     |     |     |
+
 3. `<-` Go to source byte and decrement
 
-This will leave our memory like this:
+    |  0  |  1  |  2  |  3  | ... |
+    | :-: | :-: | :-: | :-: | :-: |
+    | 47  |  1  |  1  |  0  | ... |
+    |  ^  |     |     |     |     |
+
+4. Repeat
+
+Once the loop finishes, the memory will look like this:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  0  | 48  | 48  |  0  | ... |
 |  ^  |     |     |     |     |
 
-Note that byte 0 is the source, 1 the buffer and 2 the target. We already made a second copy, but it is not in the original position (1)! Luckily, we already know how to move a byte:
+We already made a second copy, but it is not in the original position (1)! Luckily, we already know how to move a byte:
 
 1. `>` Go to buffer byte
 2. `[<+>-]` Move the buffer byte to the source byte
 
+This leaves the memory with a copy of byte 0 in byte 2:
+
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 48  |  0  | 48  |  0  | ... |
-|  ^  |     |     |     |     |
-
-Ok, one last algorithm for extra points:
+|     |  ^  |     |     |     |
 
 **Add Bytes**
 
-Let's imagine we want to add 2 bytes:
+One last algorithm for extra points. Let's imagine we want to add 2 bytes (0 and 1):
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 10  | 20  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-So, we end up with:
+So, we end up with a new byte (2):
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 10  | 20  | 30  |  0  | ... |
-|  ^  |     |     |     |     |
+|     |     |  ^  |     |     |
 
-Well, instead of jumping straight into the brainfuck, let's plan how to achieve it with the previous algorithms:
+Well, instead of jumping straight into brainfuck, let's plan how to achieve using the previous algorithms:
 
 1. Copy byte 0 into byte 2
-2. Increment byte 2 the same as byte 1
+2. Increment byte 2 by the same value of byte 1
 
 The first step is now trivial with the _Copy Byte_ algorithm.
 
 For the second step, we can actually use _Copy Byte_ again!. Because with _Copy Byte_ we are just increasing the target variable, if the variable is not 0, we will be adding them!
 
-1. Copy byte 0 to 2, using 3 as buffer: `[>>+>+<<<-]>>>[<<<+>>>-]` (pointer at byte 3)
-2. Copy byte 1 to 2, using 3 as buffer: `<<[>>+<+<-]>>[<<+>>-]`
-
-The full code being:
-
 ```brainfuck
-[>>+>+<<<-]>>>[<<<+>>>-]<<[>>+<+<-]>>[<<+>>-]
+[>>+>+<<<-]>>>[<<<+>>>-] Copy byte 0 to 2, using 3 as buffer
+<<[>>+<+<-]>>[<<+>>-] Copy byte 1 to 2, using 3 as buffer
 ```
 
-At this point, we are reaching unreadable, and hard to follow code, but the takeaway is that we can compose this relatively complex code from smaller, easier to understand algorithms, and keep building from there.
+> This code may look very different to previous snippets, but if you focus on each component of the loop, you'll see that the only difference is the pointers moving to different bytes[^10].
+
+At this point, code is getting harder and harder to follow. The takeaway is that we can compose relatively complex code from smaller, easier algorithms, and keep building from these foundations.
 
 ## The First Abstraction: Code Generation
 
-The first step, I decided, was to start implementing some of this basic algorithms as a small library of functions, so I could start creating Brainfuck code.
+Armed with some rudimentary brainfuck algorithms, I decided to start implementing a small library. With this, so I could start generating brainfuck code in Go.
 
 ### Writer
 
-To aid on code generation, I made a simple `Writer` class[^6]. Nothing fancy, as this is my first project in Go:
+To aid with code generation, I made a simple `Writer` struct[^writer.go]. Nothing fancy, as this is my first project in Go:
 
 ```go title="writer.go"
 package bfwriter
@@ -339,28 +403,161 @@ func NewWriter() *writer {
 	return &wrt
 }
 
+// Appends BF command into the strings builder
 func (wrt *writer) Command(command BFCommand) {
 	wrt.sb.WriteString(string(command))
 }
 
+// Adds an arbitrary string as a comment
 func (wrt *writer) Comment(comment string) {
 	wrt.sb.WriteString("  ")
 	wrt.sb.WriteString(comment)
 	wrt.sb.WriteString("\n")
 }
 
+// Prints the string to stdout
 func (wrt *writer) Print() {
 	fmt.Println(wrt.sb.String())
 }
 ```
 
-_This way, I don't need to remember how to use `strings.Builder`_
+_This way, I don't need to remember how to use `strings.Builder`._
 
-This way I could
+### CommandHandler
+
+All the commands and utilities will be in the `CommandHandler` struct[^commands.go]:
+
+```go title="commands.go"
+type CommandHandler struct {
+	writer          *writer
+}
+
+func NewCommandHandler() *CommandHandler {
+	cmd := CommandHandler{
+		writer: NewWriter(),
+	}
+
+	return &cmd
+}
+
+// Move pointer n positions, left or right
+// MovePointer(3)     ">>>"
+// MovePointer(-3)     "<<<"
+// MovePointer(-2+1)  "<"
+func (c *CommandHandler) MovePointer(pos int) {
+	if pos > 0 {
+		for i := 0; i < pos; i++ {
+			c.writer.Command(BFIncPointer)
+		}
+	}
+
+	if pos < 0 {
+		for i := 0; i > pos; i-- {
+			c.writer.Command(BFDecPointer)
+		}
+	}
+}
+
+// Add (or substracts) a certain number to the current cell
+// Add(3)    "+++"
+func (c *CommandHandler) Add(count int) {
+	if count > 0 {
+		for i := 0; i < count; i++ {
+			c.writer.Command(BFInc)
+		}
+	}
+
+	if count < 0 {
+		for i := 0; i > count; i-- {
+			c.writer.Command(BFDec)
+		}
+	}
+}
+
+
+// Resets cell to 0 ([-])
+func (c *CommandHandler) Reset() {
+	c.writer.Command(BFLoopBegin)
+	c.Add(-1) // Substracts 1
+	c.writer.Command(BFLoopEnd)
+}
+
+
+// Move the value of current byte to target byte
+// (counting from current byte)
+func (c *CommandHandler) MoveByte(to int) {
+	c.writer.Command(BFLoopBegin)
+	c.MovePointer(to) // Go to target byte
+	c.Add(1)
+	c.MovePointer(-to) // Returns to source from
+	c.Add(-1)
+	c.writer.Command(BFLoopEnd)
+}
+
+// Copy current byte to target byte, using temp as buffer
+func (c *CommandHandler) Copy(to int, temp int) {
+	// Implementation is similar to MoveByte,
+	// a direct translation from brainfuck
+}
+```
+
+> These commands should be fairly simple to follow. The only quirky code are the calls to `MovePointer`. Because we are always dealing with relative positions rather than absolute, we need to keep subtracting the last pointer position to return to the original source byte.
+
+Just by having some basic commands and helpers, I can already start composing the more complex ones, such as `Add` with very little actual brainfuck going into their implementations:
+
+```go title="commands.go"
+// Adds byte y to current byte, using temp,
+// modifies current byte
+func (c *CommandHandler) AddCell(y int, temp int) {
+	c.MovePointer(y)
+	c.Copy(-y, -y+temp) // Copy y into source, pass the relative position of temp to y
+	c.MovePointer(-y)   // Return to source
+}
+```
+
+With this helper class, I can start building some (very) basic programs:
+
+```go title="main.go"
+cmd := bfwriter.NewCommandHandler()
+
+// Adds 20 to byte 0
+cmd.Add(20)
+// Move to the right (byte 1)
+cmd.MovePointer(1)
+ // Adds 28 to byte 1
+cmd.Add(28)
+// Adds byte on the left (byte 0) to current byte (1),
+// uses byte to the right (3) as a temp variable
+cmd.AddCell(-1, 1)
+```
+
+The generated brainfuck:
+
+```brainfuck
+++++++++++++++++++++>++++++++++++++++++++++++++++<>>[-]<<[>+>+<<-]>>[<<+>>-]<<>
+```
+
+The resulting memory state:
+
+|  0  |  1  |  2  |  3  | ... |
+| :-: | :-: | :-: | :-: | :-: |
+| 20  | 48  |  0  |  0  | ... |
+|     |  ^  |     |     |     |
+
+This is starting to look like an useful tool to generate brainfuck code. I'm being quite loose with the term "useful".
+
+Of course, this is still far from the promised language. At the moment, any code using these commands require to manually handle the pointer, which is prone to errors and one of the hardest parts of programming brainfuck.
+
+In the next devlog, I'll cover how to improve the access to memory, so we don't need to deal with relative pointers anymore, and eventually ignore the pointer altogether! This will make this a proper brainfuck code generation tool.
 
 [^1]: [Wikipedia - Brainfuck Language Design](https://en.wikipedia.org/wiki/Brainfuck#Language_design)
 [^2]: [Nayuki Brainfuck Interpreter](https://www.nayuki.io/page/brainfuck-interpreter-javascript)
 [^3]: [The Go Programming Language](https://go.dev/)
 [^4]: Using `#` as a debugging breakpoint is not unique to this interpreter, [kvbc's Brainfuck IDE](https://kvbc.github.io/bf-ide/) provides a similar feature.
-[^5]: [esolangs.org Brainfuck algorithms](https://esolangs.org/wiki/Brainfuck_algorithms)
-[^6]: [`writer.go` in GitHub](https://github.com/angrykoala/mindfck/blob/79f49f73de2895a525e1872cc4a4f4a3f2a6e058/bfwriter/writer.go)
+[^5]: An invaluable source of brainfuck algorithms is [esolangs.org - Brainfuck Algorithms](https://esolangs.org/wiki/Brainfuck_algorithms)
+[^7]: [Wikipedia - Brainfuck](https://en.wikipedia.org/wiki/Brainfuck#Language_design)
+[^8]: [esolangs.org - Brainfuck Conventions](https://esolangs.org/wiki/Brainfuck#Conventions)
+[^9]: It won't, however, consider the memory limitations of some implementations.
+[^10]: For those really serious about learning brainfuck. [esolangs.org](https://esolangs.org/wiki/Brainfuck_algorithms) uses a shortened notation to make it easier to read brainfuck algorithms in which the target bytes are written instead of the actual pointer movements. For example adding 2 bytes looks like: `[c+d+a-]d[a+d-]b[c+d+b-]d[b+d-]`
+[^writer.go]: [`writer.go` in GitHub](https://github.com/angrykoala/mindfck/blob/79f49f73de2895a525e1872cc4a4f4a3f2a6e058/bfwriter/writer.go)
+[^commands.go]: [`commands.go` in Github](https://github.com/angrykoala/mindfck/blob/79f49f73de2895a525e1872cc4a4f4a3f2a6e058/bfwriter/commands.go)

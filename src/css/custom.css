@@ -31,4 +31,8 @@
 
 .hidden {
   display: none !important;
-  }
+}
+
+code, pre {
+  tab-size: 4;
+}

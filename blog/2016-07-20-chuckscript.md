@@ -1,7 +1,8 @@
 ---
 title: ChuckScript
+slug: chuckscript
 date: 2016-07-20
-tags: [Esolangs]
+tags: [Esolangs, JavaScript]
 ---
 
 Chuck Norris can code using binary without 1, with Chuck Norris Programming Language (**CNPL**) you also can!. For those who think assembler is a high level language.

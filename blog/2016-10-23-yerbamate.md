@@ -1,6 +1,8 @@
 ---
 title: Yerbamate
+slug: yerbamate
 date: 2016-10-23
+tags: [JavaScript]
 ---
 
 > The js testing library for command-line interfaces.

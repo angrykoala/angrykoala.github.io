@@ -1,5 +1,6 @@
 ---
 title: First Post
+slug: first-post
 date: 2016-07-12
 ---
 

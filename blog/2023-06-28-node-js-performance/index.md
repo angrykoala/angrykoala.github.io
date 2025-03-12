@@ -1,3 +1,9 @@
+---
+slug: improving-neo4j-graphql-server-performance
+date: 2023-06-28
+tags: [GraphQL]
+---
+
 # Improving a Node.js GraphQL Server Performance
 
 > Originally posted on [Medium](https://medium.com/neo4j/improving-a-node-js-graphql-server-performance-645a4ae711c3) as part of the [Neo4j Developer Blog](https://medium.com/neo4j)

@@ -1,5 +1,6 @@
 ---
 title: Gaucho
+slug: gaucho
 date: 2017-01-15
 ---
 
