@@ -2,7 +2,6 @@
 slug: mindfck-devlog-1
 date: 2025-03-13
 tags: [Esolangs, Go]
-draft: true
 ---
 
 # Mindfck Devlog 1: Making a High Level Programming Language to Brainfuck
@@ -118,9 +117,9 @@ You can try playing around with brainfuck using any online interpreter[^2].
 
 ### Making a Brainfuck Interpreter in Go
 
-It is trivial to implement an interpreter for brainfuck in a couple of hours. A while ago I had to learn Go[^3]. As a learning exercise I decided to write a brainfuck interpreter, which soon devolved into the madness that is Mindfck.
+Implementing an interpreter for brainfuck is trivial and can be done in a couple of hours. A while ago, I had to learn Go[^3]. As a learning exercise, I decided to write a brainfuck interpreter, which soon devolved into the madness that is Mindfck.
 
-We begin with a simple data structure to hold the memory as an array, a pointer and the output:
+We start with a simple data structure to hold the memory as an array, a pointer and an output buffer:
 
 ```go title="interpreter.go"
 package bfinterpreter
@@ -134,9 +133,9 @@ type Interpreter struct {
 }
 ```
 
-> For those unfamiliar with Go[^3]. Go utilizes `struct` instead of classes. Uppercase properties and methods are public; lowercase are only accessible within the same package.
+> For those unfamiliar with Go[^3], Go uses `struct` instead of classes. Uppercase properties and methods are public; lowercase are only accessible within the same package.
 
-Running the interpreter is as simple as reading characters and performing the operations in a `switch` statement, updating the structure:
+Running the interpreter is as simple as reading characters and executing operations in a `switch` statement, updating the structure:
 
 ```go title="interpreter.go"
 // ...
@@ -151,7 +150,7 @@ func (interpreter *Interpreter) Run(code string) {
 			case '>':
 				interpreter.memPtr += 1
 				if len(interpreter.Memory) <= interpreter.memPtr {
-					// Increases memory array as needed
+					// Increase memory array as needed
 					interpreter.Memory = append(interpreter.Memory, 0)
 				}
 			case '<':
@@ -165,23 +164,23 @@ func (interpreter *Interpreter) Run(code string) {
 }
 ```
 
-You can find the full code in [GitHub](https://github.com/angrykoala/mindfck/blob/master/bfinterpreter/interpreter.go).
+You can find the full code on [GitHub](https://github.com/angrykoala/mindfck/blob/master/bfinterpreter/interpreter.go).
 
 There are a few conventions worth mentioning:
 
--   The memory size is not specified in this implementation, other implementations may impose a strict limit on memory size.
--   This implementation supports _"byte wrapping"_. If a byte overflows (> 255) it will wrap to 0. If it underflows (< 0) it will wrap to 0.
--   This implementation does not support _"memory wrapping"_, if the pointer underflows (< 0) it will panic.
+-   The memory size is not specified in this implementation; other implementations may impose a strict limit.
+-   This implementation supports _"byte wrapping"_. If a byte overflows (> 255), it wraps to 0. If it underflows (< 0), it also wraps to 0.
+-   This implementation does not support _"memory wrapping"_. If the pointer underflows (< 0), it will panic.
 
 > Different interpreters may have slightly different conventions[^8], which some programs may rely on.
 >
-> The code in this project will not rely on neither, byte nor memory wrapping[^9]. This means that code generated with Mindfck can be directly run on most common brainfuck interpreters.
+> The code in this project will not rely on either byte or memory wrapping[^9]. This ensures that code generated with Mindfck can be run directly on most common brainfuck interpreters.
 
 #### Custom Debugger
 
-An advantage of building your own interpreter, is that you can add whatever tooling you need. In this case, I added an extra command `#` which prints debugging information:
+One advantage of building your own interpreter is that you can add any tooling you need. In this case, I added an extra command, `#`, to print debugging information:
 
-```go title="interpreter.go "
+```go title="interpreter.go"
 func (interpreter *Interpreter) Run(code string) {
 	// ...
 		case '#':
@@ -196,11 +195,11 @@ func (interpreter *Interpreter) Debug() {
 }
 ```
 
-Brainfuck, by design, ignores any invalid command, considering these comments, so code written with this extra debugging command will just be ignored by other interpreters[^4].
+By design, brainfuck ignores any invalid command, treating them as comments. This means code written with this extra debugging command will simply be ignored by other interpreters[^4].
 
 ### Basic Algorithms
 
-Before embarking on making a full featured language I had to learn a bit more of brainfuck. My knowledge of this language before this project was pitiful, other than making interpreters. So my first step was to learn some basic algorithms[^5].
+Before embarking on creating a full-featured language, I had to learn a bit more about brainfuck. My knowledge of the language before this project was pitiful—aside from making some interpreters. So my first step was to learn some basic algorithms[^5].
 
 **Reset Byte**  
 Arguably, the most basic algorithm with some utility is resetting a byte:
@@ -209,9 +208,9 @@ Arguably, the most basic algorithm with some utility is resetting a byte:
 [-]
 ```
 
-This algorithm will loop while decrementing the current byte until it is zero, at which point it will get out of the loop. This is particularly useful, because brainfuck doesn't have a mechanism of setting bytes to a certain value (except when using input: `,`). This needs to be done by incrementing `+` or decrementing `-`, so being able to reset a byte is necessary to reuse memory bytes.
+This algorithm loops while decrementing the current byte until it reaches zero, at which point it exits the loop. This is particularly useful because brainfuck doesn't have a built-in way to set bytes to a specific value (except when using input: `,`). Instead, values must be adjusted incrementally using `+` or `-`. Being able to reset a byte is essential for reusing memory.
 
-For example, setting a byte to 3, regardless of the value it had before:
+For example, setting a byte to 3, regardless of its previous value:
 
 ```brainfuck
 [-]+++
@@ -219,7 +218,7 @@ For example, setting a byte to 3, regardless of the value it had before:
 
 **Move Byte**
 
-Moving bytes is the base of most other algorithms, in this case, we want to go move the value in position 0:
+Moving bytes is the foundation of most other algorithms. In this case, we want to move the value in position 0:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
@@ -237,34 +236,34 @@ To position 2:
 [>>+<<-]
 ```
 
-Let's breakdown this loop:
+This is done with a single loop. Let's break it down:
 
-1. The first part `>>+` increments the target byte by one:
+1. The first part, `>>+`, increments the target byte by one:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 48  |  0  |  1  |  0  | ... |
     |     |     |  ^  |     |     |
 
-2. The second part `<<-` decrements the source byte by one:
+2. The second part, `<<-`, decrements the source byte by one:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 47  |  0  |  1  |  0  | ... |
     |  ^  |     |     |     |     |
 
-3. Rinse and repeat.
+3. Repeat until the source byte reaches 0.
 
-When the source byte reaches 0, the loop will finish, and the target byte will contain the same value as the source had at the beginning:
+When the loop finishes, the target byte contains the same value the source byte had at the beginning:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  0  |  0  | 48  |  0  | ... |
 |  ^  |     |     |     |     |
 
-Note that this loops must end pointing to the source byte on each iteration, as this byte is acting as a counter.
+Note that this loop must end with the pointer on the source byte during each iteration, as this byte acts as a counter.
 
-This algorithm assumes the target variable is 0 at the beginning. What if it is not? We can just reset!
+This algorithm assumes the target byte starts at 0. What if it doesn’t? We can reset it first:
 
 ```brainfuck
 >>[-] Reset byte 2
@@ -272,35 +271,35 @@ This algorithm assumes the target variable is 0 at the beginning. What if it is 
 [>>+<<-] Move byte 0 to byte 2
 ```
 
-> Remember brainfuck ignores all invalid characters, so the previous snipped is valid brainfuck that you can copy and paste.
+> Remember, brainfuck ignores all invalid characters, so the previous snippet is valid brainfuck that you can copy and paste.
 
 **Copy Byte**
 
-What if instead of moving the byte, we want a full copy of it?. Well, to do this we need to use a third byte as a buffer:
+What if, instead of moving the byte, we want to make a full copy of it? To do this, we need to use a third byte as a buffer:
 
 ```brainfuck
 [>>+<+<-]>[<+>-]
 ```
 
-Ok, it starting to get a bit tricky, bear with me:
+Okay, it’s starting to get a bit tricky, but bear with me:
 
-The first loop `[>>+<+<-]` is doing something very similar to move byte, with some extra steps:
+This algorithm consists of 2 loops. The first loop `[>>+<+<-]` is doing something very similar to moving a byte, with some extra steps:
 
-1. `>>+` Go to target byte (2) and increment
+1. `>>+` Go to the target byte (2) and increment it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 48  |  0  |  1  |  0  | ... |
     |     |     |  ^  |     |     |
 
-2. `<+` Go to buffer byte (1) and increment
+2. `<+` Go to the buffer byte (1) and increment it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 48  |  1  |  1  |  0  | ... |
     |     |  ^  |     |     |     |
 
-3. `<-` Go to source byte and decrement
+3. `<-` Go to the source byte and decrement it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
@@ -318,8 +317,8 @@ Once the loop finishes, the memory will look like this:
 
 We already made a second copy, but it is not in the original position (1)! Luckily, we already know how to move a byte:
 
-1. `>` Go to buffer byte
-2. `[<+>-]` Move the buffer byte to the source byte
+1. `>` Go to the buffer byte.
+2. `[<+>-]` Move the buffer byte to the source byte.
 
 This leaves the memory with a copy of byte 0 in byte 2:
 
@@ -344,27 +343,27 @@ So, we end up with a new byte (2):
 | 10  | 20  | 30  |  0  | ... |
 |     |     |  ^  |     |     |
 
-Well, instead of jumping straight into brainfuck, let's plan how to achieve this using the previous algorithms:
+Instead of jumping straight into brainfuck, let's plan how to achieve this using the previous algorithms:
 
-1. Copy byte 0 into byte 2
-2. Increment byte 2 by the same value of byte 1
+1. Copy byte 0 into byte 2.
+2. Increment byte 2 by the same value of byte 1.
 
 The first step is now trivial with the _Copy Byte_ algorithm.
 
-For the second step, we can actually use _Copy Byte_ again!. Because with _Copy Byte_ we are just increasing the target variable, if the variable is not 0, we will be adding them!
+For the second step, we can actually use _Copy Byte_ again! Since with _Copy Byte_ we are just increasing the target byte, if the variable is not 0, we will be adding them!
 
 ```brainfuck
 [>>+>+<<<-]>>>[<<<+>>>-] Copy byte 0 to 2, using 3 as buffer
 <<[>>+<+<-]>>[<<+>>-] Copy byte 1 to 2, using 3 as buffer
 ```
 
-> This code may look very different to previous snippets, but if you focus on each component of the loop, you'll see that the only difference is the pointers moving to different bytes[^10].
+> This code may look very different from previous snippets, but if you focus on each component of the loop, you'll see that the only difference is the pointers moving to different bytes[^10].
 
-At this point, code is getting harder and harder to follow. The takeaway is that we can compose relatively complex code from smaller, easier algorithms, and keep building from these foundations.
+At this point, the code is getting harder to follow. The takeaway is that we can compose relatively complex code from smaller, easier algorithms, and keep building from these foundations.
 
 ## The First Abstraction: Code Generation
 
-Armed with some rudimentary brainfuck algorithms, I decided to start implementing a small library. With this, so I could start generating brainfuck code in Go.
+Armed with some rudimentary brainfuck algorithms, I decided to start implementing a small library. This would help me generate brainfuck code in Go.
 
 ### Writer
 
@@ -429,7 +428,7 @@ All the commands and utilities will be in the `CommandHandler` struct[^commands.
 
 ```go title="commands.go"
 type CommandHandler struct {
-	writer          *writer
+	writer *writer
 }
 
 func NewCommandHandler() *CommandHandler {
@@ -442,7 +441,7 @@ func NewCommandHandler() *CommandHandler {
 
 // Move pointer n positions, left or right
 // MovePointer(3)     ">>>"
-// MovePointer(-3)     "<<<"
+// MovePointer(-3)    "<<<"
 // MovePointer(-2+1)  "<"
 func (c *CommandHandler) MovePointer(pos int) {
 	if pos > 0 {
@@ -458,7 +457,7 @@ func (c *CommandHandler) MovePointer(pos int) {
 	}
 }
 
-// Add (or substracts) a certain number to the current cell
+// Add (or subtract) a certain number to the current cell
 // Add(3)    "+++"
 func (c *CommandHandler) Add(count int) {
 	if count > 0 {
@@ -474,14 +473,12 @@ func (c *CommandHandler) Add(count int) {
 	}
 }
 
-
 // Resets cell to 0 ([-])
 func (c *CommandHandler) Reset() {
 	c.writer.Command(BFLoopBegin)
-	c.Add(-1) // Substracts 1
+	c.Add(-1) // Subtracts 1
 	c.writer.Command(BFLoopEnd)
 }
-
 
 // Move the value of current byte to target byte
 // (counting from current byte)
@@ -489,7 +486,7 @@ func (c *CommandHandler) MoveByte(to int) {
 	c.writer.Command(BFLoopBegin)
 	c.MovePointer(to) // Go to target byte
 	c.Add(1)
-	c.MovePointer(-to) // Returns to source from
+	c.MovePointer(-to) // Returns to source
 	c.Add(-1)
 	c.writer.Command(BFLoopEnd)
 }
@@ -501,7 +498,7 @@ func (c *CommandHandler) Copy(to int, temp int) {
 }
 ```
 
-Just by having some basic commands and helpers, We can compose more complex algorithms like addition with very little actual brainfuck going into their implementations:
+Just by having some basic commands and helpers, we can compose more complex algorithms like addition with very little actual brainfuck going into their implementations:
 
 ```go title="commands.go"
 // Adds byte y to current byte, using temp,
@@ -513,7 +510,7 @@ func (c *CommandHandler) AddCell(y int, temp int) {
 }
 ```
 
-Using this helper class, We can start building some (very) basic programs:
+Using this helper class, we can start building some (very) basic programs:
 
 ```go title="main.go"
 cmd := bfwriter.NewCommandHandler()
@@ -522,7 +519,7 @@ cmd := bfwriter.NewCommandHandler()
 cmd.Add(20)
 // Move to the right (byte 1)
 cmd.MovePointer(1)
- // Adds 28 to byte 1
+// Adds 28 to byte 1
 cmd.Add(28)
 // Adds byte on the left (byte 0) to current byte (1),
 // uses byte to the right (3) as a temp variable
@@ -542,9 +539,11 @@ The resulting memory state:
 | 20  | 48  |  0  |  0  | ... |
 |     |  ^  |     |     |     |
 
-This is starting to look like an useful tool to generate brainfuck code. This is still far from the promised language. At the moment, any code using these commands require to manually handle the pointer, which is prone to errors and one of the hardest parts of programming brainfuck.
+This is starting to look like a useful tool to generate brainfuck code. This is still far from the promised language. At the moment, any code using these commands requires manually handling the pointer, which is prone to errors and one of the hardest parts of programming brainfuck.
 
-In the next devlog, I'll cover how to improve memory access, so we don't need to deal with relative pointers anymore. Eventually we will be able to ignore the pointer altogether!
+## Conclusion
+
+In this post, I've covered the basic foundations of brainfuck that we will need to create a usable high-level language targeting brainfuck. In the next devlog, I'll cover how to improve memory access, so we don't need to deal with relative pointers anymore in our language. Eventually, we will be able to ignore the pointer altogether!
 
 [^1]: [Wikipedia - Brainfuck Language Design](https://en.wikipedia.org/wiki/Brainfuck#Language_design)
 [^2]: [Nayuki Brainfuck Interpreter](https://www.nayuki.io/page/brainfuck-interpreter-javascript)
