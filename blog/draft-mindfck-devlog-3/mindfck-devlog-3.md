@@ -1,21 +1,11 @@
 ---
-slug: mindfck-devlog-2
+slug: mindfck-devlog-3
 date: 2025-04-10
 tags: [Esolangs, Go]
 draft: true
 ---
 
-# Mindfck: A High Level Programming Language to Brainfuck Devlog 2
-
-This is a follow-up of [Part 1](../2025-03-10-mindfck-devlog-1/)
-
-<!-- truncate -->
-
-## Memory Access
-
-### Fixing Loops
-
-## Variables
+# Mindfck Devlog 3: Making a High Level Programming Language to Brainfuck
 
 ## Let's Make a Language
 
@@ -29,7 +19,7 @@ This is a follow-up of [Part 1](../2025-03-10-mindfck-devlog-1/)
 
 ## Arrays
 
-### Dynamic access to array ?
+### Dynamic access to array
 
 **Dirty Bytes**
 
