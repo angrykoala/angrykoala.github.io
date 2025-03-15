@@ -522,7 +522,7 @@ cmd.MovePointer(1)
 // Adds 28 to byte 1
 cmd.Add(28)
 // Adds byte on the left (byte 0) to current byte (1),
-// uses byte to the right (3) as a temp variable
+// uses byte to the right (2) as a temp variable
 cmd.AddCell(-1, 1)
 ```
 
