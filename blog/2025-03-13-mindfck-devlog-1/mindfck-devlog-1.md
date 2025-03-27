@@ -6,7 +6,7 @@ tags: [Esolangs, Go]
 
 # Mindfck Devlog 1: Making a High Level Programming Language to Brainfuck
 
-A few months ago, I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). It's a simple, easy-to-use language that transpiles to the infamous brainfuck[^7]. In this and following posts, I'll document the journey of making this ridiculous project, along with its challenges and solutions.
+A few months ago, I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). It's a simple, easy-to-use language that transpiles to the infamous [brainfuck](https://en.wikipedia.org/wiki/Brainfuck#Language_design). In this and following posts, I'll document the journey of making this ridiculous project, along with its challenges and solutions.
 
 With Mindfck, a fairly innocuous piece of code like:
 
@@ -550,7 +550,6 @@ In this post, I've covered the basic foundations of brainfuck that we will need 
 [^3]: [The Go Programming Language](https://go.dev/)
 [^4]: Using `#` as a debugging breakpoint is not unique to this interpreter, [kvbc's Brainfuck IDE](https://kvbc.github.io/bf-ide/) provides a similar feature.
 [^5]: An invaluable source of brainfuck algorithms is [esolangs.org - Brainfuck Algorithms](https://esolangs.org/wiki/Brainfuck_algorithms)
-[^7]: [Wikipedia - Brainfuck](https://en.wikipedia.org/wiki/Brainfuck#Language_design)
 [^8]: [esolangs.org - Brainfuck Conventions](https://esolangs.org/wiki/Brainfuck#Conventions)
 [^9]: It won't, however, consider the memory limitations of some implementations.
 [^10]: For those really serious about learning brainfuck. [esolangs.org](https://esolangs.org/wiki/Brainfuck_algorithms) uses a shortened notation to make it easier to read brainfuck algorithms in which the target bytes are written instead of the actual pointer movements. For example adding 2 bytes looks like: `[c+d+a-]d[a+d-]b[c+d+b-]d[b+d-]`

@@ -336,13 +336,161 @@ func (c *CommandHandler) If(cond int, code func()) {
 
 ## Variables
 
-> TODO
+Using memory spaces is an improvement, but it is less than ideal, as memory has to be manually handled. The solution for that is to add variables.
+
+### Environment[^1]
+
+The core of using variables is to link unique identifiers to the positions in memory. To do this I have a `Env` struct which holds this mapping and a few simple methods to reserve and access memory variables[^2]:
+
+```go title="env.go"
+type MindfuckEnv struct {
+	variables      map[string]int // Labels to position mapping
+}
+
+
+func (env *MindfuckEnv) ReserveMemory(label string) string
+func (env *MindfuckEnv) ReleaseMemory(label string)
+func (env *MindfuckEnv) GetPosition(label string) int
+```
+
+To assign a new position in memory to a label, the simplest approach would be to just add 1 to the latest assigned position[^3], avoiding any memory collisions. The problem, however, is that as we create variables (particularly temp variables) memory consumption grows, as we are not reusing memory space.
+
+To solve this, I added the `ReleaseMemory` method, so positions could be reused, and had to use a slightly more complex setup to allocate memory:
+
+```go title="env.go"
+type MindfuckEnv struct {
+	variables      map[string]int // Labels to position mapping
+	reservedMemory common.ItemSet // Positions reserved
+	freedMemory    []int // Positions that have been freed
+}
+```
+
+This way, we keep track of variables, reserved memory[^4] and freed memory. When allocating a new label, we prioritize the already freed memory, rather than a new position.
+
+A few trivial changes to commandHandler:
+
+1. Expose `ReserveMemory` with a new method `Declare`
+
+    ```go title="commands.go"
+    func (c *CommandHandler) Declare(label string) string {
+    	return c.env.ReserveMemory(label)
+    }
+    ```
+
+2. Update all commands to use these variables and expose `ReserveMemory`:
+
+    ```go title="commands.go"
+    func (c *CommandHandler) Copy(from string, to string) {
+    	temp0 := c.env.ReserveMemory("_temp0") // Declare temporal variable
+    	temp1 := c.env.ReserveMemory("_temp1")
+    	defer c.env.ReleaseMemory(temp0) // Release temporal variable
+    	defer c.env.ReleaseMemory(temp1)
+
+    	// Reset temp and to
+    	c.Reset(temp0)
+    	c.Reset(to)
+
+    	c.Loop(from, func() {
+    		c.Inc(to)
+    		c.Inc(temp0)
+    		c.Dec(from)
+    	})
+
+    	c.Move(temp0, from)
+    }
+    ```
+
+    > For those unfamiliar with Go. `defer` makes the statement to be executed right at the end of the function call. It is a very neat way of keeping the temporal variables memory allocation and deallocation close to avoid memory leaks. The same could be achieved by just moving `c.env.ReleaseMemory(temp0)` to the end of the function
+
+The pseudo language now looks like this:
+
+```go
+	cmd := codegen.New()
+
+	var1 := cmd.Declare("var1")
+	var2 := cmd.Declare("var2")
+	var3 := cmd.Declare("var3")
+
+	cmd.Set(var1, 65)
+	cmd.Set(var2, 3)
+
+	cmd.Add(var1, var2, var3)
+	cmd.Out(var3)
+	cmd.Print()
+```
+
+### Improving variables
+
+I was happy with the current state, in fact at this point I started working on the parsing of the actual language (spoilers of part 3!) but there was still a small nagging problem with these variables.
+
+In my internal code I was declaring variables with a reserved label: `temp0 := c.env.ReserveMemory("_temp0")`, which means that, like with the reserved memory position, a user wouldn't be able to create variables with the same names. Not only that but my own commands needed to carefully avoid labels collision. Luckily, not too long ago I had to face a similar problem in an unrelated project[^5], so I wasn't as blind as I usually was in this project.
+
+My solution was to create an interface `Variable` to hold the position and label of a variable:
+
+```go
+type Variable interface {
+	Position() int
+	hasLabel() bool
+	label() string
+}
+```
+
+And 2 structs matching this interface:
+
+-   `NamedVariable`: Holds a position and label.
+-   `AnonVariable`: Holds a position, but no label.
+
+Now `env.go` can simply work with variables and support for declaring variables without a label:
+
+```go title="env.go"
+type MindfuckEnv struct {
+	labels         map[string]Variable
+	reservedMemory utils.ItemSet
+	freedMemory    []int
+}
+
+
+func (env *MindfuckEnv) DeclareVariable(label string) Variable
+func (env *MindfuckEnv) DeclareAnonVariable() Variable
+func (env *MindfuckEnv) ReleaseVariable(v Variable)
+func (env *MindfuckEnv) ResolveLabel(label string) Variable
+```
+
+Again, a trivial refactor to use variables:
+
+```go title="commands.go"
+func (c *CommandHandler) Declare(label string) env.Variable {
+	return c.env.DeclareVariable(label)
+}
+
+func (c *CommandHandler) Copy(from env.Variable, to env.Variable) {
+	temp0 := c.env.DeclareAnonVariable()
+	temp1 := c.env.DeclareAnonVariable()
+	defer c.env.ReleaseVariable(temp0)
+	defer c.env.ReleaseVariable(temp1)
+
+	// Reset temp and to
+	c.Reset(temp0)
+	c.Reset(to)
+
+	c.Loop(from, func() {
+		c.Inc(to)
+		c.Inc(temp0)
+		c.Dec(from)
+	})
+
+	c.Move(temp0, from)
+}
+```
+
+Note that only NamedVariables are exposed with the `Declare` method. Anonymous variables are kept just for internal variables.
 
 ## Conclusion
 
 We end up with the following API:
 
 ```go title="commands.go"
+func Declare(label string) Variable {} // Declares a new variable
 func Reset(v Variable) {} // Resets v to 0
 func Add(v Variable, i int) {} // Increments (or decrements) value i to v
 func Set(v Variable, i int) {} // Sets v to given value, same as Reset + Add
@@ -353,3 +501,9 @@ func AddCell(from Variable, target Variable) {} // Add value of from to target
 func While(cond Variable, code func()) {}
 func If(cond Variable, code func()) {}
 ```
+
+[^1]: [Robert Nystrom - Crafting Interpreters](https://craftinginterpreters.com/).
+[^2]: You can find the full `env.go` code at this point on [GitHub](https://github.com/angrykoala/mindfck/blob/58a7a5ca0eb549f000c5a3b12f719094d8f6d2d1/env/env.go).
+[^3]: This seems to be the approach taken by [Headache](https://github.com/LucasMW/Headache), another language that transpiles to Brainfuck.
+[^4]: `common.ItemSet` is just a thin wrapper over Go's `map[int]bool`, which is the canonical way of achieving `Set` operations in Go. After reviewing this code I noticed that this was all completely unnecessary, as a simple counter to the highest reserved memory position and the list of freedMemory is enough.
+[^5]: [Cypher Builder](https://github.com/neo4j/cypher-builder), a tool for code generation that also has the concept of variables.
