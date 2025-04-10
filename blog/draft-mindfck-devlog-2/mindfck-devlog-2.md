@@ -5,19 +5,19 @@ tags: [Esolangs, Go]
 draft: true
 ---
 
-# Mindfck Devlog 2: Making a High Level Programming Language to Brainfuck
+# Mindfck Devlog 2: Memory Handling, Variables and Flow Control in Brainfuck
 
 > This is a follow-up of [Part 1](../2025-03-13-mindfck-devlog-1/mindfck-devlog-1.md).
 
 In the previous post, I've covered some basics of how brainfuck works, and how some algorithms can be of use to make a language that transpiles to brainfuck: [mindfck](https://github.com/angrykoala/mindfck).
 
-In this part, I'm going to cover how to abstract brainfuck's pointer, so we can access memory in a way closer to how any normal language would do it, first with arbitrary memory positions, and then move to using actual variables.
+In this part, I'm trying to abstract brainfuck's pointer, so we can access memory how any sensible language would do. First, by supporting arbitrary memory positions, and then move on to use actual variables.
 
 I'll also implement the basic abstraction over control flows `if` and `while`.
 
 <!-- truncate -->
 
-Currently, our tool to generate brainfuck looks like this
+Currently, my tool to generate brainfuck looks like this:
 
 ```go title="main.go"
 cmd.Add(20) // Pointer at 0
@@ -44,7 +44,7 @@ If we want to move to byte 2, we need to do `>>`:
 |  0  |  0  |  0  |  0  | ... |
 |     |     |  ^  |     |     |
 
-But that only works, if we were in byte 0 in the first place.
+But that only works, if we are in byte 0 in the first place. If we are in byte 3, the command is `<`.
 
 A simple and elegant solution to this problem, is to actually keep track of the pointer at compile time. To do that, we add a new variable to `CommandHandler` to keep track of this _"phantom pointer"_:
 
@@ -62,7 +62,7 @@ Then, we can update this pointer every time a `>` or `<` appears in the code:
 // Move pointer n positions, left or right
 func (c *CommandHandler) MovePointer(pos int) {
 	c.pointer += pos
-    // rest of the code
+    // ...
 }
 ```
 
@@ -126,7 +126,7 @@ func (c *CommandHandler) movePointer(to int) {
 }
 ```
 
-> Note that we have renamed `MovePointer` to `movePointer` this makes this a private (technically package) method. Because the pointers are now handled directly by the commands, we do not need to expose `MovePointer` as its own command
+> Note that we have renamed `MovePointer` to `movePointer` this makes this a private (technically package) method. Because the pointers are now handled directly by the commands, we do not need to expose `MovePointer` as its own command, making the whole interface a bit simpler.
 
 With these changes, our original code starts looking much better:
 

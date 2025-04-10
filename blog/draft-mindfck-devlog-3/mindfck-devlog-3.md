@@ -1,6 +1,6 @@
 ---
 slug: mindfck-devlog-3
-date: 2025-04-10
+date: 2025-04-20
 tags: [Esolangs, Go]
 draft: true
 ---
