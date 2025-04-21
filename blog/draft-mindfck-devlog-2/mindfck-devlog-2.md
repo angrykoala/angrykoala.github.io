@@ -5,99 +5,97 @@ tags: [Esolangs, Go]
 draft: true
 ---
 
-# Mindfck Devlog 2: Memory Handling, Variables and Flow Control in Brainfuck
+# Mindfck Devlog 2: Memory Handling, Variables, and Flow Control in Brainfuck
 
 > This is a follow-up to [Part 1](../2025-03-13-mindfck-devlog-1/mindfck-devlog-1.md).
 
-In the previous post, I covered some basics of how brainfuck works and how certain algorithms can be useful for creating a language that transpiles to brainfuck: [mindfck](https://github.com/angrykoala/mindfck).
+In the last post, I covered the basics of how brainfuck works and how certain algorithms can help build a language that compiles to it: [mindfck](https://github.com/angrykoala/mindfck).
 
-In this part, I'm focusing on abstracting brainfuck's pointer so we can access memory the way any sensible language would do. First, by supporting arbitrary memory positions,
-and then move on to using actual variables.
+This time, I’m tackling one of brainfuck’s biggest pain points: manual pointer management. First, I’ll introduce support for accessing arbitrary memory positions. Then, I’ll build on that to add real variables.
 
-I'll also implement basic abstractions for control flows like `if` and `while`.
+Finally, I’ll cover basic abstractions for control flow, like `if` and `while`.
 
 <!-- truncate -->
 
-Currently, my tool to generate brainfuck looks like this:
+Currently, my tool for generating brainfuck code looks like this:
 
 ```go title="main.go"
-cmd.Add(20) // Pointer at 0
-cmd.MovePointer(1) // Pointer at 1
+cmd.Add(20)         // Pointer at 0
+cmd.MovePointer(1)  // Pointer at 1
 cmd.Add(28)
-cmd.AddCell(-1, 1) // Add byte 0 to 1, using 2 as buffer. Pointer stays in byte 1
+cmd.AddCell(-1, 1)  // Add byte 0 to 1, using 2 as buffer. Pointer stays at byte 1
 ```
 
-It is an improvement over brainfuck, but we cannot say it is particularly good for coding. The programmer needs to keep track of the pointer position, as well as know the state of the pointer after each command. What we need is a way to access any byte of the brainfuck memory.
+It’s a step up from raw brainfuck, but still far from ideal. The programmer has to manually track the pointer position and remember where it ends up after each command. What we really need is a way to access any memory cell directly—without thinking about the pointer at all.
 
 ## Random Memory Access
 
-There are only 2 commands to move through memory in Brainfuck:
+There are only two commands to move through memory in brainfuck:
 
 | Command |          Description           |
 | :-----: | :----------------------------: |
 |   `>`   | Increment pointer (move right) |
 |   `<`   | Decrement pointer (move left)  |
 
-If we want to move to byte 2, we need to do `>>`:
+If we want to move to byte 2, we’d write `>>`:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  0  |  0  |  0  |  0  | ... |
 |     |     |  ^  |     |     |
 
-But that only works if we are in byte 0 in the first place. If we are in byte 3, the command would be: `<`.
+But that only works if we’re starting from byte 0. If we’re at byte 3, moving to byte 2 is just: `<`.
 
-A simple solution to this problem is to keep track of the pointer at compile time. To do that, we add a new variable to `CommandHandler` to keep track of this _"phantom pointer"_:
+A simple solution is to track the pointer at compile time. To do this, we add a new field to `CommandHandler` to track a _phantom pointer_:
 
 ```go title="commands.go"
 type CommandHandler struct {
-	writer *writer
-
-    pointer int
+	writer  *writer
+	pointer int
 }
 ```
 
-Then, we can update this pointer every time a `>` or `<` appears in the code:
+Then, update the pointer whenever `>` or `<` appears in the code:
 
 ```go title="commands.go"
 // Move pointer n positions, left or right
 func (c *CommandHandler) MovePointer(pos int) {
 	c.pointer += pos
-    // ...
+	// ...
 }
 ```
 
-This way, every time `CommandHandler` generates `>` or `<`, it will update the pointer accordingly. In order to move to an arbitrary position, we can now use this fake pointer to calculate the steps. For example:
+Now, we can compute the movement to any position based on the current "fake" pointer. For example:
 
-1. `>>`. This will update the pointer to 2.
+1. `>>` sets the pointer to 2:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     |  0  |  0  |  0  |  0  | ... |
     |     |     |  ^  |     |     |
 
-2. Move to byte 1: 1-2 = -1 (move minus one position `<`)
+2. To go to byte 1, just calculate `1 - 2 = -1` → move one step left (`<`):
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     |  0  |  0  |  0  |  0  | ... |
     |     |  ^  |     |     |     |
 
-### Updating commands
+### Updating Commands
 
-So far, all commands have been acting over the current position of the pointer:
+So far, all commands have acting over the pointer’s current position:
 
 ```go
 MoveByte(3) // Move selected byte, 3 spaces to the right
 ```
 
-A much more friendly interface would be:
+A more intuitive interface would look like this:
 
 ```go
-MoveByte(2, 5) // Move byte in position 2 to position 5
+MoveByte(2, 5) // Move byte at position 2 to position 5
 ```
 
-To support this, we update all relevant commands to take absolute positions rather than relative ones:
+To support this, we update all relevant commands to use absolute positions instead of relative ones:
 
 ```go title="commands.go"
 func (c *CommandHandler) Reset(position int)
@@ -105,11 +103,11 @@ func (c *CommandHandler) MoveByte(from int, to int)
 func (c *CommandHandler) Copy(from int, to int, buffer int)
 ```
 
-Next, we update the internal pointer movement logic, `MovePointer`, to calculate and apply the difference between the current pointer position and the target:
+Then we update the internal pointer movement logic to compute the offset from the current position and apply the difference:
 
 ```go title="commands.go"
 func (c *CommandHandler) movePointer(to int) {
-	var diff = to - c.pointer
+	diff := to - c.pointer
 	c.pointer += diff
 
 	if diff > 0 {
@@ -126,31 +124,31 @@ func (c *CommandHandler) movePointer(to int) {
 }
 ```
 
-> Note that we have renamed `MovePointer` to `movePointer`. This makes it a private (technically, package-level) method. Because the pointers are now handled directly by the commands, we no longer need to expose `MovePointer` as its own command, simplifying the interface overall.
+> We've renamed `MovePointer` to `movePointer` to make it private. Since commands now handle pointer movement internally, exposing `MovePointer` is no longer necessary, which simplifies the interface.
 
-With these changes, our original code starts looking much better:
+With these changes, the code becomes much clearer:
 
 ```go title="main.go"
-cmd.Add(0, 20) // Add 20 to byte 0
-cmd.Add(1, 28) // Add 28 to byte 1
-cmd.AddCell(0, 1, 2) // Add byte 0 to 1, using 2 as buffer.
+cmd.Add(0, 20)          // Add 20 to byte 0
+cmd.Add(1, 28)          // Add 28 to byte 1
+cmd.AddCell(0, 1, 2)    // Add byte 0 to 1, using 2 as buffer
 ```
 
-Note that the user's code no longer has to worry about moving pointers at all! We can even use Go variables to make the code more general:
+Now, we don’t need to think about pointer movement at all! And we can even use Go variables for cleaner, more flexible code:
 
 ```go title="main.go"
 a := 0
 b := 1
 buffer := 2
 
-cmd.Add(a, 20)       // Add 20 to byte 0
-cmd.Add(b, 28)       // Add 28 to byte 1
-cmd.AddCell(a, b, buffer) // Add byte 0 to 1, using 2 as buffer.
+cmd.Add(a, 20)
+cmd.Add(b, 28)
+cmd.AddCell(a, b, buffer)
 ```
 
-### Reserved memory space
+### Reserved Memory Space
 
-You may have noticed that while commands like `Reset`, `Add`, or `Move` have a nice, clear API, others like `AddCell`, `Copy`, and any command that uses extra memory as a buffer are a bit harder to use. This can be solved by reserving a few bytes for these "buffers":
+You may have noticed that while commands like `Reset`, `Add`, or `Move` have a clean, simple API, others—like `AddCell`, `Copy`, or any command that requires extra memory—are trickier to use. The solution? Reserve a few bytes up front for internal use:
 
 ```go title="commands.go"
 const (
@@ -162,12 +160,12 @@ const (
 )
 ```
 
-A command like `Copy` can now have a much clearer interface:
+With this setup, `Copy` can now offer a much cleaner interface:
 
 ```go title="commands.go"
 func (c *CommandHandler) Copy(from int, to int) {
 	if from == TEMP0 || to == TEMP0 {
-		panic("Invalid COPY, using copy register")
+		panic("Invalid COPY, trying to use copy register")
 	}
 	// Reset TEMP0 and destination
 	c.Reset(TEMP0)
@@ -185,58 +183,58 @@ func (c *CommandHandler) Copy(from int, to int) {
 }
 ```
 
-The only downside of this approach is that users need to be aware of the reserved memory layout, to avoid overwritting those memory spaces:
+The only caveat is that users must avoid overwriting the reserved memory:
 
 ```go title="main.go"
 a := cmd.MAIN + 0
 b := cmd.MAIN + 1
 
-cmd.Add(a, 20)      // Add 20 to byte "0"
-cmd.Add(b, 28)      // Add 28 to byte "1"
-cmd.AddCell(a, b)   // No need to pass buffer explicitly
+cmd.Add(a, 20)     // Add 20 to byte "0"
+cmd.Add(b, 28)     // Add 28 to byte "1"
+cmd.AddCell(a, b)  // No need to pass buffer explicitly
 ```
 
 ## Fixing Loops and Adding `while`
 
-Before we continue, we need to address the elephant in the room: the trick of tracking the pointer at compile time just doesn't work.
+Before we go further, we need to address the elephant in the room: tracking the pointer at compile time just doesn’t work.
 
-Take the following example:
+Consider this example:
 
 ```brainfuck
 >>>+<+
 ```
 
-Our _"phantom pointer"_ would calculate the final position to be 2: three steps right (`>>>`) minus one step left (`<`). And if we execute this snippet, we'll see that the calculation is correct!
+Our _phantom pointer_ would calculate the final position as 2: three steps right (`>>>`), then one step left (`<`). And in this case, it’s correct!
 
-But now, let's add some loops into the mix. For instance, let's revisit the first loop we demonstrated in [Part 1](../2025-03-13-mindfck-devlog-1/mindfck-devlog-1.md#brainfuck-primer):
+But now let’s throw loops into the mix. Here’s a loop from [Part 1](../2025-03-13-mindfck-devlog-1/mindfck-devlog-1.md#brainfuck-primer):
 
 ```brainfuck
 >>+<+<+[+>]
 ```
 
-The first part, `>>+<+<+`, is no problem. Our phantom pointer will calculate 2 − 2 = 0, which is correct:
+The first part, `>>+<+<+`, is fine. Our phantom pointer calculates 2 − 2 = 0, which is correct:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  1  |  1  |  1  |  0  | ... |
 |  ^  |     |     |     |     |
 
-The second part, however, is a loop: `[+>]`. Our compiler will see the `>` and assume the pointer moves to position 1. But in reality, since the loop runs multiple times and advances the pointer during each iteration, the final pointer position ends up much further to the right.
+The second part, however, is a loop: `[+>]`. Our compiler sees the `>` and thinks the pointer ends up at position 1. But in reality, since the loop advances the pointer during each iteration, the final position is further to the right.
 
-If we execute this code, here’s the actual result:
+If we run this code, here’s what actually happens:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 |  2  |  2  |  2  |  0  | ... |
 |     |     |     |  ^  |     |
 
-The final position is 3!
+The final pointer is at position 3!
 
-> As a reminder: `[+>]` is incrementing all cells until it finds a 0
+> Reminder: `[+>]` increments each non-zero cell until it reaches a zero.
 
-This is an unsolvable problem because the state of memory is also dependent on user input (thanks to the command `,`). Even if we tried to execute the code ahead of time to determine the real pointer position, the result might differ in future runs due to input variation.
+This is an unsolvable problem because memory state can depend on user input—thanks to the `,` command. Even if we tried to run the code ahead of time to determine the real pointer position, the result could still vary across runs.
 
-For a while, I thought this was as far as I could take this project. But when reviewing the algorithms I had implemented, I noticed something interesting: all of them seemed to work just fine with the fake pointer—even the ones that used loops!
+For a while, I thought this was the end of the road for the project. But then I went back to review the algorithms I had already implemented and noticed something interesting: they all worked fine with the fake pointer, even the ones that used loops!
 
 Let’s take a look at the copy byte algorithm:
 
@@ -244,17 +242,19 @@ Let’s take a look at the copy byte algorithm:
 [>>+<+<-]>[<+>-]
 ```
 
-According to the _phantom pointer_, the end position should be 1 (`>>>>` - `<<<`).
+According to the _phantom pointer_, the final position should be 1 (`>>>>` minus `<<<`).
 
-If we execute this:
+Let’s walk through the execution:
 
-1. The first loop: `>>+<+<-`, the pointer begins at 0, at the end of each loop iteration, the pointer is still at 0.
-2. `>` move pointer to 1.
-3. The Second loop: `<+>-`, the pointer begins at 1, remains at 1 by the end of the loop.
+1. First loop: `>>+<+<-`  
+   The pointer starts at 0 and ends each iteration back at 0.
+2. `>` moves the pointer to 1.
+3. Second loop: `<+>-`  
+   Starts at 1 and finishes at 1 after each iteration.
 
-So the pointer ends at the expected position: 1.
+So, the final pointer position is 1, just as expected.
 
-All these algorithms have loops that begin and end in the same position. This make sense, as most algorithms are checking against the same byte to continue the loop or not. This means that the end position of the pointer is always the same as the initial position. Regardless of the number of iterations!
+All these algorithms have loops that begin and end in the same position. This makes sense: loops typically rely on the same byte to determine whether to continue or exit. That means the pointer always returns to its starting position, no matter how many times the loop runs.
 
 ```brainfuck
 [>>+<+<-]>[<+>-]
@@ -262,7 +262,7 @@ All these algorithms have loops that begin and end in the same position. This ma
 0       0 1    1
 ```
 
-So, as long as the loop starts and finishes in the same byte, we are in the clear. This principle even holds for nested loops:
+This means that, as long as a loop starts and finishes on the same byte, we’re safe. This principle even holds with nested loops:
 
 ```brainfuck
 [>>+<+[>>>+<<<]<]>[<+>-]
@@ -270,7 +270,7 @@ So, as long as the loop starts and finishes in the same byte, we are in the clea
 0     1   4   1 0 1    1
 ```
 
-I thought of many ways I could validate that this holds true when users write code, but then I remembered that this is my language, and I can make whatever I want to enforce it:
+I considered different ways to validate this behavior when users write their own code. But then I remembered that this is _my_ language, and I can enforce whatever rules I want:
 
 ```go title="commands.go"
 // Loops, ensuring that the loop begins and ends in the same cell
@@ -283,13 +283,15 @@ func (c *CommandHandler) While(condition int, code func()) {
 }
 ```
 
-This `while` loop implementation takes 2 parameters: a condition cell to check if the loop continues, and a callback with the commands of the loop.
+This `while` implementation takes two parameters: a condition cell to check whether the loop should continue, and a callback containing the loop body.
 
-1. Move to the condition position and begin the loop.
-2. Execute the arbitrary commands from the user with the callback `code`.
-3. Before finishing the loop, we make sure to go back to the original position.
+1. It moves to the condition cell and starts the loop.
+2. It runs the user-defined commands inside the `code` callback.
+3. Before ending the loop, it moves back to the condition cell.
 
-While its simplicity may be counterintuitive. Because any code inside the loop is the code that will run from the condition byte, we can still use our _phantom pointer_ (and our commands) inside the loop. An example using this `while`:
+Its simplicity might be surprising. But since the loop body runs starting from the condition byte, we can still rely on the _phantom pointer_ and use all existing commands safely inside the loop.
+
+Here’s an example using this `while`:
 
 ```go title="while_example.go"
 cmd := bfwriter.NewCommandHandler()
@@ -300,10 +302,10 @@ cmd.Add(0, 65)
 // Adds 10 to byte 1
 cmd.Add(1, 10)
 
-cmd.While(1, func() {
-    cmd.Print(0)   // Print byte 0
-    cmd.Add(0, 1)  // Add 1 to byte 0
-    cmd.Add(1, -1) // Subtract 1 from byte 1
+cmd.While(1, func() { // While byte 1 is > 0
+	cmd.Print(0)   // Print byte 0
+	cmd.Add(0, 1)  // Add 1 to byte 0
+	cmd.Add(1, -1) // Subtract 1 from byte 1
 })
 ```
 
@@ -315,7 +317,7 @@ ABCDEFGHIJ
 
 ## Conditionals: `if`
 
-Brainfuck doesn't have conditionals, but the same behaviour can be achieved with a loop that only executes once:
+Brainfuck doesn’t support conditionals directly, but we can simulate an `if` by using a loop that runs only once:
 
 ```go title="commands.go"
 func (c *CommandHandler) If(cond int, code func()) {
@@ -327,18 +329,20 @@ func (c *CommandHandler) If(cond int, code func()) {
 }
 ```
 
-1. Copy the condition byte, we will be modifying this one and we don't want to change the original
-    - Using `TEMP1` to avoid collision with `TEMP0` in `Copy`
-2. Use `while` to do a loop with `TEMP1` as a condition.
-3. Before ending the loop, reset `TEMP1`. This ensures the loop is only executed once.
+Here’s how it works:
+
+1. We copy the condition byte. Since we’ll modify it, we don’t want to affect the original.
+    - We use `TEMP1` to avoid interfering with `TEMP0` used in `Copy`.
+2. We use `While` with `TEMP1` as the condition.
+3. Inside the loop, we run the code and then reset `TEMP1`, ensuring the loop runs only once.
 
 ## Variables
 
-Using memory spaces directly is an improvement, but it is less than ideal, as memory has to be manually handled. The solution for that is to add variables.
+Using raw memory positions is a big step up from brainfuck, but it’s still far from ideal as memory must be managed manually. The solution? Add support for variables.
 
 ### Environment[^1]
 
-The core of using variables is to link unique identifiers to positions in memory. To do this, I have an `Env` struct which holds this mapping and a few simple methods to reserve and access memory variables[^2]:
+The core idea behind variables is to map unique identifiers to memory positions. For that, I use an `Env` struct to manage this mapping, along with a few helper methods to reserve and access memory[^2]:
 
 ```go title="env.go"
 type MindfuckEnv struct {
@@ -350,9 +354,9 @@ func (env *MindfuckEnv) ReleaseMemory(label string)
 func (env *MindfuckEnv) GetPosition(label string) int
 ```
 
-To assign a new position in memory to a label, the simplest approach would be to just add 1 to the latest assigned position[^3], avoiding any memory collisions. The problem, however, is that as we create variables (particularly temp variables), memory consumption grows, since we are not reusing memory space.
+A simple way to assign new positions is to increment from the last used slot[^3], which avoids memory collisions. But this naive approach has a downside: memory consumption quickly grows, especially with short-lived temporary variables, since memory isn't reused.
 
-To solve this, I added the `ReleaseMemory` method so positions could be reused, and updated the struct to use a slightly more complex setup for memory allocation:
+To fix this, I introduced `ReleaseMemory`, and updated the struct to support a smarter allocation strategy:
 
 ```go title="env.go"
 type MindfuckEnv struct {
@@ -362,11 +366,11 @@ type MindfuckEnv struct {
 }
 ```
 
-This way, we keep track of variables, reserved memory[^4], and freed memory. When allocating a new label, we prioritize the already freed memory rather than a new position.
+Now, we keep track of used and freed memory slots[^4]. When allocating new variables, we reuse freed slots first before reserving fresh positions.
 
-A few trivial changes to CommandHandler:
+A few simple updates to `CommandHandler` make working with variables much smoother:
 
-1. Expose `ReserveMemory` with a new method `Declare`
+1. **Expose `ReserveMemory`** using a new `Declare` method:
 
     ```go title="commands.go"
     func (c *CommandHandler) Declare(label string) string {
@@ -374,7 +378,7 @@ A few trivial changes to CommandHandler:
     }
     ```
 
-2. Update all commands to use these variables and expose `ReserveMemory`:
+2. **Update all commands** to use variable names instead of raw positions, and manage temp memory internally:
 
     ```go title="commands.go"
     func (c *CommandHandler) Copy(from string, to string) {
@@ -397,9 +401,9 @@ A few trivial changes to CommandHandler:
     }
     ```
 
-    > For those unfamiliar with Go: `defer` makes the statement execute at the end of the function call. It’s a neat way to tie memory allocation and deallocation together and avoid leaks. The same effect could be achieved by calling `ReleaseMemory` at the end manually.
+    > For those unfamiliar with Go: `defer` delays execution until the surrounding function returns. It's a clean way to handle cleanup like releasing memory, without needing to explicitly call `ReleaseMemory` at the end.
 
-The pseudo-language now looks like this:
+Thanks to these changes, our pseudo-language now reads much more clearly:
 
 ```go
 cmd := codegen.New()
@@ -416,13 +420,21 @@ cmd.Out(var3)
 cmd.Print()
 ```
 
-### Improving variables
+### Improving Variables
 
-I was happy with the current state—in fact, at this point I started working on the parsing of the actual language (spoilers of part 3!)—but there was still a small nagging problem with these variables.
+I was happy with how variables were working—so much so that I started working on the language parser (spoilers for Part 3!). But there was still one small issue bothering me.
 
-In my internal code I was declaring variables with a reserved label: `temp0 := c.env.ReserveMemory("_temp0")`, which meant that, like with the reserved memory positions, a user wouldn't be able to create variables with the same names. Not only that, but my own commands needed to carefully avoid label collisions. Luckily, not too long ago I had to face a similar problem in a different project[^5], so I wasn't as blind as I usually was in this one.
+Internally, I was declaring variables using reserved labels like:
 
-My solution was to create an interface `Variable` to hold the position and label of a variable:
+```go
+temp0 := c.env.ReserveMemory("_temp0")
+```
+
+This meant users couldn’t declare variables with names like `_temp0`, and worse, my own commands had to be careful to avoid naming collisions, just like with the reserved memory positions.
+
+Luckily, I had run into a similar problem before in an unrelated project[^5], so this time I wasn’t going in completely blind.
+
+My solution was to define a `Variable` interface to represent both named and anonymous variables. This way, every variable tracks its position, and optionally, a label:
 
 ```go
 type Variable interface {
@@ -432,12 +444,12 @@ type Variable interface {
 }
 ```
 
-And two structs matching this interface:
+Then I created two implementations of this interface:
 
--   `NamedVariable`: Holds a position and label.
--   `AnonVariable`: Holds a position, but no label.
+-   **`NamedVariable`**: Holds both a memory position and a label.
+-   **`AnonVariable`**: Holds only the position, with no label.
 
-Now `env.go` can simply work with variables and support declaring them without a label:
+Now `env.go` can simply work with variables and support declaring them with or without a label:
 
 ```go title="env.go"
 type MindfuckEnv struct {
@@ -452,7 +464,7 @@ func (env *MindfuckEnv) ReleaseVariable(v Variable)
 func (env *MindfuckEnv) ResolveLabel(label string) Variable
 ```
 
-Again, a trivial refactor to use variables:
+Next came a trivial refactor to use anonymous variables internally:
 
 ```go title="commands.go"
 func (c *CommandHandler) Declare(label string) env.Variable {
@@ -479,11 +491,11 @@ func (c *CommandHandler) Copy(from env.Variable, to env.Variable) {
 }
 ```
 
-Note that only `NamedVariable`s are exposed through the `Declare` method. Anonymous variables are kept exclusively for internal use.
+Note that only named variables are exposed via `Declare`. Anonymous variables are reserved for internal use, preventing naming collisions and keeping user's code clean.
 
 ## Conclusion
 
-We end up with the following API:
+After this deep dive into memory handling, we now have the following API:
 
 ```go title="commands.go"
 func Declare(label string) Variable              // Declares a new variable
@@ -498,8 +510,13 @@ func While(cond Variable, code func())           // While loop
 func If(cond Variable, code func())              // If conditional
 ```
 
+That’s a solid set of easy-to-use tools for a Go-based abstraction over brainfuck.
+
+In the next part, I’ll cover how I built a simple AST and parser using antlr4[^6] to tie everything together into a real programming language.
+
 [^1]: [Robert Nystrom - Crafting Interpreters](https://craftinginterpreters.com/).
 [^2]: You can find the full `env.go` code at this point on [GitHub](https://github.com/angrykoala/mindfck/blob/58a7a5ca0eb549f000c5a3b12f719094d8f6d2d1/env/env.go).
 [^3]: This seems to be the approach taken by [Headache](https://github.com/LucasMW/Headache), another language that transpiles to Brainfuck.
-[^4]: `common.ItemSet` is just a thin wrapper over Go's `map[int]bool`, which is the canonical way of achieving `Set` operations in Go. After reviewing this code I noticed that this was all completely unnecessary, as a simple counter to the highest reserved memory position and the list of freedMemory is enough.
+[^4]: `common.ItemSet` is just a thin wrapper over Go's `map[int]bool`, which is the canonical way of achieving `Set` operations in Go. After reviewing this code I noticed that this was all completely unnecessary, as a simple counter to the highest reserved memory position and the list of freedMemory would be enough.
 [^5]: [Cypher Builder](https://github.com/neo4j/cypher-builder), a tool for code generation that also has the concept of variables.
+[^6]: [Antlr Official Website](https://www.antlr.org/)
