@@ -1,8 +1,7 @@
 ---
 slug: mindfck-devlog-2
-date: 2025-04-10
+date: 2025-04-21
 tags: [Esolangs, Go]
-draft: true
 ---
 
 # Mindfck Devlog 2: Memory Handling, Variables, and Flow Control in Brainfuck
@@ -517,6 +516,6 @@ In the next part, I’ll cover how I built a simple AST and parser using antlr4[
 [^1]: [Robert Nystrom - Crafting Interpreters](https://craftinginterpreters.com/).
 [^2]: You can find the full `env.go` code at this point on [GitHub](https://github.com/angrykoala/mindfck/blob/58a7a5ca0eb549f000c5a3b12f719094d8f6d2d1/env/env.go).
 [^3]: This seems to be the approach taken by [Headache](https://github.com/LucasMW/Headache), another language that transpiles to Brainfuck.
-[^4]: `common.ItemSet` is just a thin wrapper over Go's `map[int]bool`, which is the canonical way of achieving `Set` operations in Go. After reviewing this code I noticed that this was all completely unnecessary, as a simple counter to the highest reserved memory position and the list of freedMemory would be enough.
-[^5]: [Cypher Builder](https://github.com/neo4j/cypher-builder), a tool for code generation that also has the concept of variables.
+[^4]: `common.ItemSet` is just a thin wrapper over Go's `map[int]bool`, which is the canonical way to implement sets in Go. After reviewing this code, I realized this was entirely unnecessary. A simple counter for the highest reserved position and tracking `freedMemory` would have been enough.
+[^5]: [Cypher Builder](https://github.com/neo4j/cypher-builder), a tool for code generation that also uses the concept of variables.
 [^6]: [Antlr Official Website](https://www.antlr.org/)
