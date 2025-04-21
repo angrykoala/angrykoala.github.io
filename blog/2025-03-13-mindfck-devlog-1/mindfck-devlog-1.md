@@ -6,7 +6,7 @@ tags: [Esolangs, Go]
 
 # Mindfck Devlog 1: Making a High Level Programming Language to Brainfuck
 
-A few months ago, I embarked on another esolang project: [Minfck](https://github.com/angrykoala/mindfck). It's a simple, easy-to-use language that transpiles to the infamous [brainfuck](https://en.wikipedia.org/wiki/Brainfuck#Language_design). In this and following posts, I'll document the journey of making this ridiculous project, along with its challenges and solutions.
+A few months ago, I embarked on another esolang project: [Mindfck](https://github.com/angrykoala/mindfck). It's a simple, easy-to-use language that transpiles to the infamous [brainfuck](https://en.wikipedia.org/wiki/Brainfuck#Language_design). In this and following posts, I'll document the journey of making this ridiculous project, along with its challenges and solutions.
 
 With Mindfck, a fairly innocuous piece of code like:
 
@@ -32,7 +32,7 @@ Transpiles to:
 
 <!-- truncate -->
 
-Building a high-level, usable language that transpiles to brainfuck is a useless project on its own; it is great, however, for learning language design and creating tools to handle less-than-ideal environments. I believe the approach I've taken to make this possible may be useful for solving real-world problems.
+Building a high-level, usable language that transpiles to brainfuck is a useless project on its own, it is great; however, for learning language design and creating tools to handle less-than-ideal environments. I believe the approach I've taken to make this possible may be useful for solving real-world problems.
 
 ## Let's Talk About Brainfuck
 
@@ -49,7 +49,7 @@ In a nutshell, a brainfuck program works with a list of bytes and a single point
 
 > Note that all bytes are initialized to 0. In memory diagrams, I've numbered the bytes to better visualize what is happening. These indexes are irrelevant to brainfuck.
 
-Brainfuck code is composed of 8 instructions[^1]. Each one is represented with a single character. Any other character is ignored and is considered a _comment_.Here is a cheatsheet:
+Brainfuck code is composed of 8 instructions.[^1] Each one is represented with a single character. Any other character is ignored and is considered a _comment_. Here is a cheatsheet:
 
 | Command |                    Description                     |
 | :-----: | :------------------------------------------------: |
@@ -111,13 +111,13 @@ The loop `[+>]` will increment 1 and move right until the selected byte is 0. In
 |  2  |  2  |  2  |  0  | ... |
 |     |     |     |  ^  |     |
 
-> Note that infinite loops are easy to come by in brainfuck. Changing the example above to `[>+]` causes the program to run indefinitely because it increments the current byte before the loops end
+> Note that infinite loops are easy to come by in brainfuck. Changing the example above to `[>+]` causes the program to run indefinitely because it increments the current byte before the loop end.
 
-You can try playing around with brainfuck using any online interpreter[^2].
+You can try playing around with brainfuck using any online interpreter.[^2]
 
 ### Making a Brainfuck Interpreter in Go
 
-Implementing an interpreter for brainfuck is trivial and can be done in a couple of hours. A while ago, I had to learn Go[^3]. As a learning exercise, I decided to write a brainfuck interpreter, which soon devolved into the madness that is Mindfck.
+Implementing an interpreter for brainfuck is trivial and can be done in a couple of hours. A while ago, I had to learn Go.[^3] As a learning exercise, I decided to write a brainfuck interpreter, which soon devolved into the madness that is Mindfck.
 
 We start with a simple data structure to hold the memory as an array, a pointer and an output buffer:
 
@@ -169,12 +169,12 @@ You can find the full code on [GitHub](https://github.com/angrykoala/mindfck/blo
 There are a few conventions worth mentioning:
 
 -   The memory size is not specified in this implementation; other implementations may impose a strict limit.
--   This implementation supports _"byte wrapping"_. If a byte overflows (> 255), it wraps to 0. If it underflows (< 0), it also wraps to 0.
+-   This implementation supports _"byte wrapping"_. If a byte overflows (> 255), it wraps to 0. If it underflows (< 0), it wraps to 255.
 -   This implementation does not support _"memory wrapping"_. If the pointer underflows (< 0), it will panic.
 
-> Different interpreters may have slightly different conventions[^8], which some programs may rely on.
+> Different interpreters may have slightly different conventions,[^8] which some programs may rely on.
 >
-> The code in this project will not rely on either byte or memory wrapping[^9]. This ensures that code generated with Mindfck can be run directly on most common brainfuck interpreters.
+> The code in this project will not rely on either byte or memory wrapping.[^9] This ensures that code generated with Mindfck can be run directly on most common brainfuck interpreters.
 
 #### Custom Debugger
 
@@ -195,11 +195,11 @@ func (interpreter *Interpreter) Debug() {
 }
 ```
 
-By design, brainfuck ignores any invalid command, treating them as comments. This means code written with this extra debugging command will simply be ignored by other interpreters[^4].
+By design, brainfuck ignores any invalid command, treating them as comments. This means code written with this extra debugging command will simply be ignored by other interpreters.[^4]
 
 ### Basic Algorithms
 
-Before embarking on creating a full-featured language, I had to learn a bit more about brainfuck. My knowledge of the language before this project was pitiful—aside from making some interpreters. So my first step was to learn some basic algorithms[^5].
+Before embarking on creating a full-featured language, I had to learn a bit more about brainfuck. My knowledge of the language before this project was pitiful—aside from making some interpreters. So my first step was to learn some basic algorithms.[^5]
 
 **Reset Byte**  
 Arguably, the most basic algorithm with some utility is resetting a byte:
@@ -218,14 +218,14 @@ For example, setting a byte to 3, regardless of its previous value:
 
 **Move Byte**
 
-Moving bytes is the foundation of most other algorithms. In this case, we want to move the value in position 0:
+Moving bytes is the foundation of most other algorithms. In this case, we want to move the value in byte **0**:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 48  |  0  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-To position 2:
+To byte **2**:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
@@ -285,21 +285,21 @@ Okay, it’s starting to get a bit tricky, but bear with me:
 
 This algorithm consists of 2 loops. The first loop `[>>+<+<-]` is doing something very similar to moving a byte, with some extra steps:
 
-1. `>>+` Go to the target byte (2) and increment it:
+1. `>>+` Go to the target byte (**2**) and increment it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 48  |  0  |  1  |  0  | ... |
     |     |     |  ^  |     |     |
 
-2. `<+` Go to the buffer byte (1) and increment it:
+2. `<+` Go to the buffer byte (**1**) and increment it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
     | 48  |  1  |  1  |  0  | ... |
     |     |  ^  |     |     |     |
 
-3. `<-` Go to the source byte and decrement it:
+3. `<-` Go to the source byte (**0**) and decrement it:
 
     |  0  |  1  |  2  |  3  | ... |
     | :-: | :-: | :-: | :-: | :-: |
@@ -315,12 +315,12 @@ Once the loop finishes, the memory will look like this:
 |  0  | 48  | 48  |  0  | ... |
 |  ^  |     |     |     |     |
 
-We already made a second copy, but it is not in the original position (1)! Luckily, we already know how to move a byte:
+We already made a second copy, but it is not in the original position (**1**)! Luckily, we already know how to move a byte:
 
 1. `>` Go to the buffer byte.
 2. `[<+>-]` Move the buffer byte to the source byte.
 
-This leaves the memory with a copy of byte 0 in byte 2:
+This leaves the memory with a copy of byte **0** to byte **2**:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
@@ -329,14 +329,14 @@ This leaves the memory with a copy of byte 0 in byte 2:
 
 **Add Bytes**
 
-One last algorithm for extra points. Let's imagine we want to add 2 bytes (0 and 1):
+One last algorithm for extra points. Let's imagine we want to add 2 bytes (**0** and **1**):
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
 | 10  | 20  |  0  |  0  | ... |
 |  ^  |     |     |     |     |
 
-So, we end up with a new byte (2):
+So, we end up with the byte **2** with the result:
 
 |  0  |  1  |  2  |  3  | ... |
 | :-: | :-: | :-: | :-: | :-: |
@@ -345,8 +345,8 @@ So, we end up with a new byte (2):
 
 Instead of jumping straight into brainfuck, let's plan how to achieve this using the previous algorithms:
 
-1. Copy byte 0 into byte 2.
-2. Increment byte 2 by the same value of byte 1.
+1. Copy byte **0** into byte **2**.
+2. Increment byte **2** by the same value of byte **1**.
 
 The first step is now trivial with the _Copy Byte_ algorithm.
 
@@ -357,7 +357,7 @@ For the second step, we can actually use _Copy Byte_ again! Since with _Copy Byt
 <<[>>+<+<-]>>[<<+>>-] Copy byte 1 to 2, using 3 as buffer
 ```
 
-> This code may look very different from previous snippets, but if you focus on each component of the loop, you'll see that the only difference is the pointers moving to different bytes[^10].
+> This code may look very different from previous snippets, but if you focus on each component of the loop, you'll see that the only difference is the pointers moving to different bytes.[^10]
 
 At this point, the code is getting harder to follow. The takeaway is that we can compose relatively complex code from smaller, easier algorithms, and keep building from these foundations.
 
@@ -367,7 +367,7 @@ Armed with some rudimentary brainfuck algorithms, I decided to start implementin
 
 ### Writer
 
-To aid with code generation, I made a simple `Writer` struct[^writer.go]. Nothing fancy, as this is my first project in Go:
+To aid with code generation, I made a simple `Writer` struct.[^writer.go] Nothing fancy, as this is my first project in Go:
 
 ```go title="writer.go"
 package bfwriter
