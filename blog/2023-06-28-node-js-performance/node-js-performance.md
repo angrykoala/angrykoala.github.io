@@ -1,7 +1,7 @@
 ---
 slug: improving-neo4j-graphql-server-performance
 date: 2023-06-28
-tags: [GraphQL]
+tags: [GraphQL, Neo4j]
 ---
 
 # Improving a Node.js GraphQL Server Performance
